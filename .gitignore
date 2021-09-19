@@ -14,13 +14,14 @@ mongo/mongobackup/backups/
 
 .env*
 
+
 venv
 
 *.csv
 scratch.py
 scratch.mongo
 
-init_secrets.sh
+# init_secrets.sh
 
 # local env files
 .env.local
@@ -49,3 +50,8 @@ mongo/dumps
 *.bin
 aws_template
 .dbshell
+
+
+
+
+
