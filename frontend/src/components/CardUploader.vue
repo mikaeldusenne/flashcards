@@ -27,8 +27,7 @@
             id="file-upload-errors"
             v-if="fileUploadErrors.length"
           >
-            The upload worked, but there was some previously existing
-            words:
+            The upload worked, but there was some previously existing words:
             <div v-for="(e, i) in fileUploadErrors" :key="i" class="card">
               <div class="card-body">
                 <div>
@@ -39,7 +38,7 @@
                   <strong>In the database:</strong>
                   {{ e.db.langs.join(" / ") }}
                   <strong>created on: </strong
-                                      >{{ new Date(e.db.created).toLocaleDateString() }}
+                  >{{ new Date(e.db.created).toLocaleDateString() }}
                   {{ new Date(e.db.created).toLocaleTimeString() }}
                 </div>
               </div>
@@ -52,12 +51,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
 
-import { Card } from "@/types";
-import CardEditor from "@/components/CardEditor.vue";
-import CardViewer from "@/components/CardViewer.vue";
 import FileUploader from "@/components/FileUploader.vue";
 axios.defaults.baseURL = "/mikarezoo-flashcards";
 

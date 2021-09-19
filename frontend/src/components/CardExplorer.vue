@@ -13,7 +13,7 @@
             for="'searchcard"
             style=""
             class="col-sm-3 col-xl-2 col-form-label"
-          >search:
+            >search:
           </label>
           <div class="col-sm-9 col-xl-10">
             <input
@@ -26,11 +26,11 @@
             />
           </div>
         </div>
-        
+
         <div class="row mb-3 list-item-form">
           <label for="lang-match-search" class="col-sm-2 col-form-label"
-          >Deck</label
-               >
+            >Deck</label
+          >
           <div class="col-sm-10">
             <b-form-select
               v-model="deck"
@@ -42,11 +42,11 @@
 
         <div
           style="
-                 display: flex;
-                 justify-content: end;
-                 margin: 0 0.5rem;
-                 margin-top: 0.5rem;
-                 "
+            display: flex;
+            justify-content: end;
+            margin: 0 0.5rem;
+            margin-top: 0.5rem;
+          "
         >
           <button
             @click="fetchCards"
@@ -66,7 +66,6 @@
           :per-page="perPage"
         ></b-pagination>
       </b-row>
-
     </div>
     <div class="card-body">
       <div class="row">
@@ -96,7 +95,6 @@ import CardViewer from "@/components/CardViewer.vue";
 
 import _ from "lodash";
 
-
 @Component({
   components: {
     CardEditor,
@@ -113,27 +111,26 @@ export default class Home extends Mixins(MathMixin) {
 
   searchCard = "";
 
-
   fetchCards() {
     axios
-    .get("/api/cards", {
-      params: {
-        first: this.perPage,
-        offset: (this.currentPage - 1) * this.perPage,
-        search: this.searchCard,
-        deck: this.deck,
-      },
-    })
-    .then((resp) => {
-      console.log("cards:");
-      console.log(resp.data);
-      this.total_cards = resp.data.n;
-      this.cards = resp.data.cards.map((e) => {
-        e.langs = _.sortBy(e.langs, [(ee) => ee.lang]);
-        return e;
-      });
-    })
-    .catch(console.log);
+      .get("/api/cards", {
+        params: {
+          first: this.perPage,
+          offset: (this.currentPage - 1) * this.perPage,
+          search: this.searchCard,
+          deck: this.deck,
+        },
+      })
+      .then((resp) => {
+        console.log("cards:");
+        console.log(resp.data);
+        this.total_cards = resp.data.n;
+        this.cards = resp.data.cards.map((e) => {
+          e.langs = _.sortBy(e.langs, [(ee) => ee.lang]);
+          return e;
+        });
+      })
+      .catch(console.log);
   }
 
   @Watch("currentPage")

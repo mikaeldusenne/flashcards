@@ -6,7 +6,7 @@ export interface CardLang {
 }
 
 export interface Card {
-    langs: CardLang[];
-    decks: string[];
-    id: string;
+  langs: CardLang[];
+  decks: string[];
+  id: string;
 }

@@ -9,7 +9,7 @@
         v-if="!detailed"
       >
         <strong>
-          {{ displayLangs.map(e => e.text).join(" / ") }}
+          {{ displayLangs.map((e) => e.text).join(" / ") }}
         </strong>
       </div>
       <div

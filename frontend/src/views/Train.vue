@@ -25,8 +25,8 @@
 
             <div class="row mb-3 list-item-form">
               <label for="lang-match-search" class="col-sm-2 col-form-label"
-              >Deck</label
-                   >
+                >Deck</label
+              >
               <div class="col-sm-10">
                 <b-form-select
                   v-model="deck"
@@ -36,7 +36,6 @@
               </div>
             </div>
 
-            
             <div class="row mb-2 list-item-form">
               <label for="lang-match-search" class="col-sm-2 col-form-label"
                 >Language</label
@@ -199,10 +198,6 @@ import MathMixin from "@/MathMixin";
 
 import axios from "axios";
 import CardViewer from "@/components/CardViewer.vue";
-
-import _ from "lodash";
-
-
 
 axios.defaults.baseURL = "/mikarezoo-flashcards";
 

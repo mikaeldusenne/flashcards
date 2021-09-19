@@ -5,8 +5,8 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-      langs: [],
-      decks: [],
+    langs: [],
+    decks: [],
     user: {
       id: null,
       credits: {},

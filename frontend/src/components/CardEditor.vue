@@ -3,8 +3,8 @@
   <div class="container-fluid form" v-on:submit.prevent>
     <div class="row mb-3 list-item-form">
       <label for="lang-match-search" class="col-sm-2 col-form-label"
-      >Deck</label
-           >
+        >Deck</label
+      >
       <div class="col-sm-10">
         <b-form-select
           multiple
@@ -118,15 +118,19 @@ export default class CardEditor extends Mixins(MathMixin) {
   saveCard() {
     console.log("add card");
     axios
-      .post("/api/add-card", {card: this.card, isNew: this.isNew})
+      .post("/api/add-card", { card: this.card, isNew: this.isNew })
       .then(() => {
         this.$emit("saved");
       })
-    .catch(err => {
-      console.log(err.response.data.card)
-      this.$emit("error", err.response.data.card)
-      this.$toast.error(`This card already exists! ${err.response.data.card.langs.map(e => e.text).join(' / ')}`)
-    });
+      .catch((err) => {
+        console.log(err.response.data.card);
+        this.$emit("error", err.response.data.card);
+        this.$toast.error(
+          `This card already exists! ${err.response.data.card.langs
+            .map((e) => e.text)
+            .join(" / ")}`
+        );
+      });
   }
 
   deleteCard() {

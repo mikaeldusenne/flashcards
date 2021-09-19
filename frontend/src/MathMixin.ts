@@ -2,7 +2,7 @@ import { Component, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
 
 @Component({
-    computed: mapGetters(["getLangs", "getDecks"]),
+  computed: mapGetters(["getLangs", "getDecks"]),
 })
 export default class MathMixin extends Vue {
   getLangs!: any[];
@@ -51,14 +51,15 @@ export default class MathMixin extends Vue {
     }
     return pretty ? pretty.title : e;
   }
-  
-  get deckOpts(){
-      return [{text: "Select a deck...", value: null}].concat(this.getDecks.map(e => {
-          return {
-              text: e.title,
-              value: e.id,
-          }
-      }))
-  }
 
+  get deckOpts() {
+    return [{ text: "Select a deck...", value: null }].concat(
+      this.getDecks.map((e) => {
+        return {
+          text: e.title,
+          value: e.id,
+        };
+      })
+    );
+  }
 }

@@ -1,9 +1,6 @@
 <template>
   <div class="container-fluid">
-    <div
-      class="row justify-content-md-center"
-      style="margin: 1rem"
-    >
+    <div class="row justify-content-md-center" style="margin: 1rem">
       <b-col sm="12" md="10" lg="10" xl="8">
         <b-tabs content-class="mt-3" lazy>
           <b-tab title="Explore">
@@ -22,10 +19,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
 
-import { Card } from "@/types";
 import CardEditor from "@/components/CardEditor.vue";
 import CardCreator from "@/components/CardCreator.vue";
 import CardUploader from "@/components/CardUploader.vue";
@@ -42,8 +38,7 @@ axios.defaults.baseURL = "/mikarezoo-flashcards";
     CardCreator,
   },
 })
-export default class Home extends Vue {
-}
+export default class Home extends Vue {}
 </script>
 
 <style>

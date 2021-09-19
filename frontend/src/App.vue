@@ -2,8 +2,8 @@
   <div id="app">
     <NavBar />
     <b-row style="text-align: center; margin-top: 1rem"
-    ><h1>{{ title }} Flashcards</h1></b-row
-                                    >
+      ><h1>{{ title }} Flashcards</h1></b-row
+    >
     <div id="content">
       <router-view />
     </div>
@@ -26,22 +26,24 @@ export default class App extends Vue {
   }
   mounted() {
     axios
-    .get("/api/langs", {})
-    .then((resp) => {
-      this.$store
-      .dispatch("setLangs", resp.data)
-      .then(console.log)
-      .catch(console.error);
-    })
-    .catch(console.log);
+      .get("/api/langs", {})
+      .then((resp) => {
+        this.$store
+          .dispatch("setLangs", resp.data)
+          .then(console.log)
+          .catch(console.error);
+      })
+      .catch(console.log);
 
-    axios.get('/api/decks').then(resp => {
-      this.$store
-      .dispatch("setDecks", resp.data)
-      .then(console.log)
-      .catch(console.error);
-    }).catch(console.log)
-
+    axios
+      .get("/api/decks")
+      .then((resp) => {
+        this.$store
+          .dispatch("setDecks", resp.data)
+          .then(console.log)
+          .catch(console.error);
+      })
+      .catch(console.log);
   }
 }
 </script>
