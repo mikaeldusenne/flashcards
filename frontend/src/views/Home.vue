@@ -96,7 +96,16 @@
         </div>
       </b-col>
     </div>
-    
+    <b-row style="position: sticky; bottom: 0; z-index: 9000;">
+      <b-pagination
+        class="pagination"
+        style="display: flex; justify-content: center;"
+        v-model="currentPage"
+        :total-rows="total_cards"
+        :per-page="perPage"
+      ></b-pagination>
+    </b-row>
+
   </div>
 </template>
 
@@ -120,9 +129,12 @@ import _ from 'lodash';
   },
 })
 export default class Home extends Vue {
-  
+  total_cards = 0;
   cards: Card[] = [];
   langs: any[] = [];
+  
+  perPage = 3;
+  currentPage = 1;
   
   uploadResult: any = null;
   
@@ -170,17 +182,29 @@ export default class Home extends Vue {
   }
   
   fetchCards(){
-    axios.get('/api/cards', {params: {first: 100, offset: 0, search: this.searchCard}})
+    axios.get('/api/cards', {params: {
+      first: this.perPage,
+      offset: (this.currentPage-1) * this.perPage,
+      search: this.searchCard
+    }})
     .then(resp => {
       console.log("cards:")
       console.log(resp.data)
-      this.cards = resp.data.map(e => {
+      this.total_cards = resp.data.n;
+      this.cards = resp.data.cards.map(e => {
         e.langs = _.sortBy(e.langs, [ee => ee.lang])
         return e;
       })
     })
     .catch(console.log)
   }
+
+  @Watch('currentPage')
+  cpchgd(v, oldv){
+    // console.log(`current page changed ${oldv} -> ${v}`)
+    this.fetchCards();
+  }
+
   
   mounted(){
     this.fetchCards()

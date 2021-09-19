@@ -63,12 +63,22 @@ def health_check():
 @flsk.route("/api/cards", methods=["GET"])
 def get_cards():
     # cards = [Card([CardLang("fr", "test")])]
+    
     args = {}
     if "search" in request.args and request.args['search'] is not None and len(request.args['search']):
         args['langs'] = {'$elemMatch': {"text": {"$regex": h.prepare_user_input_search_regex(request.args['search'])}}}
-    cards = db.get_cards(args)
+    cards = db.db.cards.find(args)
+    
+    total_n = db.db.cards.count_documents(args)
+    
+    if "offset" in request.args:
+        cards = cards.skip(int(request.args["offset"]))
+        
+    if "first" in request.args:
+        cards = cards.limit(int(request.args["first"]))
+    
     # logging.exception("exception log")
-    return jsonify([e.toDict() for e in cards])
+    return jsonify(dict(n=total_n, cards=[V.decode(e).toDict() for e in cards]))
 
 
 @flsk.route("/api/update-usercard", methods=["POST"])

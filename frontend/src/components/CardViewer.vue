@@ -53,7 +53,7 @@ export default class CardViewer extends Vue {
   langs!: string[];
   
   get displayLangs(){
-    return this.card.langs.filter(e => ~this.langs.indexOf(e.lang))
+    return this.card.langs.filter(e => !this.langs.length || ~this.langs.indexOf(e.lang))
   }
   
   editing = false;
