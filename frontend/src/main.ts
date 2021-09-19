@@ -17,7 +17,6 @@ import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 
-
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
@@ -29,9 +28,8 @@ Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.component("v-select", vSelect);
 
-
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount("#app");

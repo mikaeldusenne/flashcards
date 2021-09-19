@@ -2,8 +2,8 @@
   <div>
     <div class="mb-3">
       <label for="formFile" class="form-label" v-if="placeholder">{{
-                                                                  placeholder
-                                                                  }}</label>
+        placeholder
+      }}</label>
       <input
         type="file"
         class="form-control"
@@ -12,7 +12,7 @@
         :state="undefined"
         :placeholder="placeholder"
         :drop-placeholder="placeholder"
-      >
+      />
     </div>
     <div
       class="card card-footer"
@@ -35,11 +35,11 @@
         @click="upload"
       >
         {{
-        !fileTooLarge
-        ? uploadButtonText
-        : "Le fichier est trop volumineux! Taille maximum: " +
-        (maxSize / 1e6).toFixed(0) +
-        "Mo"
+          !fileTooLarge
+            ? uploadButtonText
+            : "Le fichier est trop volumineux! Taille maximum: " +
+              (maxSize / 1e6).toFixed(0) +
+              "Mo"
         }}
       </button>
     </div>
@@ -54,7 +54,7 @@ import axios from "axios";
 axios.defaults.baseURL = process.env.BASE_URL;
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class FileUploader extends Vue {
   private filepath: File | null = null;
@@ -84,9 +84,9 @@ export default class FileUploader extends Vue {
   // private uploadPercentage = 0;
   // private uploadInfo: UploadInfo = {
   //   started: new Date(),
-//   transferred: 0,
-//   toTransfer: 0
-// };
+  //   transferred: 0,
+  //   toTransfer: 0
+  // };
 
   setFilePath(event) {
     this.filepath = event.target.files[0];
@@ -130,15 +130,15 @@ export default class FileUploader extends Vue {
   private upload() {
     // this.uploadInfo = {
     //   started: new Date(),
-//   transferred: NaN,
-//   toTransfer: NaN
-// };
-// 
-// const updateUploadPercentage = evt => {
-//   this.uploadInfo.transferred = evt.loaded;
-//   this.uploadInfo.toTransfer = evt.total;
-//   this.$emit("progress", this.uploadInfo);
-// };
+    //   transferred: NaN,
+    //   toTransfer: NaN
+    // };
+    //
+    // const updateUploadPercentage = evt => {
+    //   this.uploadInfo.transferred = evt.loaded;
+    //   this.uploadInfo.toTransfer = evt.total;
+    //   this.$emit("progress", this.uploadInfo);
+    // };
 
     if (this.filepath && this.endpoint) {
       this.loading = true;
@@ -149,21 +149,21 @@ export default class FileUploader extends Vue {
       const formData = this.formData;
 
       axios
-      .post(this.endpoint, formData, {
-        // onUploadProgress: updateUploadPercentage
-      })
-      .then(ans => {
-        this.$emit("uploadFinished", ans.data);
-        this.$emit("input", ans.data);
-        this.loading = false;
-        this.uploaded = true;
-      })
-      .catch(err => {
-        console.log(err);
-        this.$emit("uploadError", err.response.data);
-        // this.$toast.error(err.response.data);
-        this.loading = false;
-      });
+        .post(this.endpoint, formData, {
+          // onUploadProgress: updateUploadPercentage
+        })
+        .then((ans) => {
+          this.$emit("uploadFinished", ans.data);
+          this.$emit("input", ans.data);
+          this.loading = false;
+          this.uploaded = true;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$emit("uploadError", err.response.data);
+          // this.$toast.error(err.response.data);
+          this.loading = false;
+        });
     }
   }
 
@@ -184,8 +184,6 @@ export default class FileUploader extends Vue {
       }
     }
   }
-
-
 }
 </script>
 
@@ -193,5 +191,4 @@ export default class FileUploader extends Vue {
 .custom-file-input.is-invalid ~ .custom-file-label {
   border-color: white !important;
 }
-
 </style>

@@ -1,145 +1,146 @@
 <template>
-  <div class="container-fluid form" @keyup.enter="saveCard" v-on:submit.prevent>
+  <!-- @keyup.enter="saveCard" -->
+  <div class="container-fluid form" v-on:submit.prevent>
+    -------- {{ getLangs }} --------
     <div v-for="l in card.langs" :key="l.id">
       <div class="row mb-3">
-        <label :for="'searchform-'+l.lang" style="" class="col-sm-4 col-xl-3 col-form-label">{{prettyLang(l.lang)}}</label>
+        <label
+          :for="'searchform-' + l.lang"
+          style=""
+          class="col-sm-4 col-xl-3 col-form-label"
+          >{{ prettyLang(l.lang) }}</label
+        >
         <div class="col-sm-8 col-xl-9">
           <input
-            :id="'searchform-'+l.lang"
+            :id="'searchform-' + l.lang"
             type="text"
             maxlength="75"
             class="form-control"
-            :placeholder="'translation in ' + prettyLang(l.lang)" 
+            :placeholder="'translation in ' + prettyLang(l.lang)"
             v-model="l.text"
           />
         </div>
       </div>
       <div class="row mb-3" v-show="showAdvanced">
-        <label :for="'commentform-'+l.lang" style="" class="col-sm-4 col-xl-3 col-form-label">comment ({{prettyLang(l.lang)}})</label>
+        <label
+          :for="'commentform-' + l.lang"
+          style=""
+          class="col-sm-4 col-xl-3 col-form-label"
+          >comment ({{ prettyLang(l.lang) }})</label
+        >
         <div class="col-sm-8 col-xl-9">
-          <input
-            :id="'commentform-'+l.lang"
-            type="text"
-            maxlength="75"
-            class="form-control"
-            :placeholder="'comment for ' + prettyLang(l.lang)" 
+          <textarea
+            :id="'commentform-' + l.lang"
             v-model="l.comment"
+            rows="2"
+            class="form-control"
+            :placeholder="'comment for ' + prettyLang(l.lang)"
           />
         </div>
       </div>
-      <hr v-if="showAdvanced">
+      <hr v-if="showAdvanced" />
     </div>
-    <div class="" style="display: flex; justify-content: center;">
-      <div style="display: flex; justify-content: center; margin: 0 0.5rem;">
+    <div class="" style="display: flex; justify-content: center">
+      <div style="display: flex; justify-content: center; margin: 0 0.5rem">
         <button
           @click="saveCard"
           class="btn btn-outline-secondary"
           type="button"
         >
-          {{textButton}} Card
+          {{ textButton }}
         </button>
       </div>
-      <div style="display: flex; justify-content: center; margin: 0 0.5rem;" v-if="card.id">
+      <div
+        style="display: flex; justify-content: center; margin: 0 0.5rem"
+        v-if="card.id"
+      >
         <button
           @click="deleteCard"
           class="btn btn-outline-danger"
           type="button"
         >
-          Delete Card
+          Delete
         </button>
       </div>
     </div>
-    <div style="display: flex; justify-content: end;"><em style="text-decoration: underline; cursor: pointer; color: #888;" @click="showAdvanced=!showAdvanced">show {{showAdvanced?'basic':'advanced'}} mode</em></div>
+    <div style="display: flex; justify-content: end">
+      <em
+        style="text-decoration: underline; cursor: pointer; color: #888"
+        @click="showAdvanced = !showAdvanced"
+        >show {{ showAdvanced ? "basic" : "advanced" }} mode</em
+      >
+    </div>
   </div>
 </template>
 
-
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import axios from 'axios'
+// import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Mixins, Prop } from "vue-property-decorator";
+import axios from "axios";
+import MathMixin from "@/MathMixin";
 
-import {Card} from "@/types";
+import { Card } from "@/types";
 
-
-@Component
-export default class CardEditor extends Vue {
-  @Prop({default: "Save"})
+@Component({
+  mixins: [MathMixin],
+})
+export default class CardEditor extends Mixins(MathMixin) {
+  @Prop({ default: "Save" })
   textButton!: string;
 
   @Prop()
   card!: Card;
-  
+
   showAdvanced = false;
-  
-  
+
   langs: any[] = [
-    {id: "fr", title:"Français"},
-    {id: "fa", title:"فارسی"},
+    { id: "fr", title: "Français" },
+    { id: "fa", title: "فارسی" },
   ];
 
-  
-  prettyLang(e){
-    const pretty = this.langs.find(ee => ee.id==e)
-    if(!pretty){
-      console.log('pretty not found for:')
-      console.log(e)
-      console.log(this.langs)
-    }
-    return pretty ? pretty.title : e;
-  }
-  
-  setupCard(){
-    this.langs.forEach(lang => {
-      if(this.card.langs.find(e => e.lang == lang.id) == undefined){
+  setupCard() {
+    this.langs.forEach((lang) => {
+      if (this.card.langs.find((e) => e.lang == lang.id) == undefined) {
         this.card.langs.push({
-          lang: lang.id, 
+          lang: lang.id,
           text: "",
           comment: "",
           // examples: [],
-        })
+        });
       }
-    })
+    });
   }
-  
-  saveCard(){
-    console.log("add card")
-    axios.post("/api/add-card", this.card)
-    .then(() => {
-      this.$emit('saved')
-    })
-    .catch(console.log)
+
+  saveCard() {
+    console.log("add card");
+    axios
+      .post("/api/add-card", this.card)
+      .then(() => {
+        this.$emit("saved");
+      })
+      .catch(console.log);
   }
-  
-  deleteCard(){
-    console.log("delete card")
-    axios.post("/api/delete-card", this.card)
-    .then(() => {
-      this.$emit('deleted')
-    })
-    .catch(console.log)
+
+  deleteCard() {
+    console.log("delete card");
+    axios
+      .post("/api/delete-card", this.card)
+      .then(() => {
+        this.$emit("deleted");
+      })
+      .catch(console.log);
   }
-  
-  mounted(){    
-    // axios.get('/api/langs')
-    // .then(resp => {
-    //   this.langs = resp.data;
-    //   this.setupCard();
-    // })
-    // .catch(console.log)
-  }
-  
 }
 </script>
 
 <style>
-body{
+body {
   background: #f9f9f9;
 }
-.nav-tabs .nav-link.active{
+.nav-tabs .nav-link.active {
   background: #f9f9f9;
 }
-.cardlangtitle{
+.cardlangtitle {
   padding: 0 1rem;
 }
-
 </style>

@@ -4,23 +4,42 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-    state: {
-        id: null,
+  state: {
+    langs: [],
+    user: {
+      id: null,
+      credits: {},
+      admin: false,
     },
-    mutations: {
-      	changeid(state, id){
-			state.id = id;
-		}
+    loggedIn: null,
+  },
+  mutations: {
+    changeLangs(state, langs) {
+      state.langs = langs;
     },
-    actions: {
-		setId({commit}, id){
-			commit("changeid", id)
-		}
+    changeUser(state, user) {
+      state.user = user;
     },
-    modules: {
-        
+    changeLoggedIn(state, b) {
+      state.loggedIn = b;
     },
-    getters: {
-        getId: state => state.id
+  },
+  actions: {
+    setUser({ commit }, user) {
+      commit("changeUser", user);
     },
+    setLangs({ commit }, langs) {
+      commit("changeLangs", langs);
+    },
+    setLoggedIn({ commit }, b) {
+      commit("changeLoggedIn", b);
+    },
+  },
+  modules: {},
+  getters: {
+    getLangs: (state) => state.langs,
+    getId: (state) => state.user.id,
+    getUser: (state) => state.user,
+    getLoggedIn: (state) => state.loggedIn,
+  },
 });

@@ -9,19 +9,19 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: Home,
   },
   {
     path: "/train",
     name: "Train",
-    component: Train
+    component: Train,
   },
 ];
 
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
-  routes
+  routes,
 });
 
 export default router;

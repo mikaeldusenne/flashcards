@@ -1,5 +1,6 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    >
     <a class="navbar-brand" href="/mikarezoo-flashcards">
       mikarezoo-flashcards
     </a>
@@ -22,7 +23,7 @@
           <b-nav-item to="#" v-if="getId" v-on:click="logout()" href="#">
             logout
           </b-nav-item>
-          
+
           <b-nav-item-dropdown right>
             <!-- Using 'button-content' slot -->
             <template v-slot:button-content>
@@ -37,18 +38,17 @@
           </b-nav-item-dropdown>
           <b-avatar text=""></b-avatar>
         </b-navbar-nav>
-
       </b-navbar-nav>
     </b-collapse>
   </nav>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { mapGetters } from 'vuex'
+import { Component, Vue } from "vue-property-decorator";
+import { mapGetters } from "vuex";
 
 @Component({
-  computed: mapGetters(['getId'])
+  computed: mapGetters(["getId"]),
 })
 export default class NavBar extends Vue {
   showLogin = false;

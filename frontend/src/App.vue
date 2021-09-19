@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <NavBar />
-    <b-row style="text-align: center; margin-top: 1rem;"><h1>{{title}} Flashcards</h1></b-row>
+    <b-row style="text-align: center; margin-top: 1rem"
+      ><h1>{{ title }} Flashcards</h1></b-row
+    >
     <div id="content">
       <router-view />
     </div>
@@ -10,21 +12,30 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-
+import axios from "axios";
 import NavBar from "@/components/NavBar.vue";
 
 @Component({
   components: {
-    NavBar
-  }
+    NavBar,
+  },
 })
 export default class App extends Vue {
-  get title(){
-    const rnd = Math.random()
-    console.log(rnd)
-    return rnd>0.5?"میکارزو":"mikarezoo"
+  get title() {
+    return Math.random() > 0.5 ? "میکارزو" : "Mikarezoo";
   }
-
+  mounted() {
+    axios
+      .get("/langs", {})
+      .then((resp) => {
+        console.log((resp as any).id);
+        this.$store
+          .dispatch("setLangs", resp.data)
+          .then(console.log)
+          .catch(console.error);
+      })
+      .catch(console.log);
+  }
 }
 </script>
 

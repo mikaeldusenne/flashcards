@@ -1,7 +1,12 @@
 import { Component, Vue } from "vue-property-decorator";
+import { mapGetters } from "vuex";
 
-@Component
+@Component({
+  computed: mapGetters(["getLangs"]),
+})
 export default class MathMixin extends Vue {
+  getLangs!: any[];
+
   prettyN(n) {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
@@ -22,7 +27,7 @@ export default class MathMixin extends Vue {
     if (!l || l.length == 0) {
       return NaN;
     } else {
-      return this.mean(l.map(e => e * e)) - this.mean(l) ** 2;
+      return this.mean(l.map((e) => e * e)) - this.mean(l) ** 2;
     }
   }
 
@@ -36,4 +41,13 @@ export default class MathMixin extends Vue {
       : k.toFixed(Math.max(0, -Math.floor(Math.log10(k)) + (n - 1)));
   }
 
+  prettyLang(e) {
+    const pretty = this.getLangs.find((ee) => ee.id == e);
+    if (!pretty) {
+      console.log("pretty not found for:");
+      console.log(e);
+      console.log(this.getLangs);
+    }
+    return pretty ? pretty.title : e;
+  }
 }
