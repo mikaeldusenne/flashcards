@@ -133,7 +133,7 @@ export default class Home extends Vue {
   cards: Card[] = [];
   langs: any[] = [];
   
-  perPage = 3;
+  perPage = 25;
   currentPage = 1;
   
   uploadResult: any = null;
