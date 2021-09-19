@@ -12,7 +12,7 @@ services:
     volumes:
       - "./nginx/nginx_conf:/etc/nginx:ro"
     ports:
-      - "80987:80"
+      - "8064:80"
   mongo-backups:
     image: mikaeldusenne/mikarezoo-flashcards_mongo_backups
     networks:
