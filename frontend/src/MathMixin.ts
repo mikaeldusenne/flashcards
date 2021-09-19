@@ -50,4 +50,5 @@ export default class MathMixin extends Vue {
     }
     return pretty ? pretty.title : e;
   }
+
 }

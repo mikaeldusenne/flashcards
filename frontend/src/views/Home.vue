@@ -6,56 +6,7 @@
       v-if="langs.length"
     >
       <b-col sm="12" md="8" lg="6" xl="6">
-        <div class="row card border-dark" style="margin-bottom: 1rem">
-          <div class="card-header">
-            <strong>Upload from file:</strong>
-          </div>
-          <div class="card-body">
-            <FileUploader
-              :endpoint="'/api/upload'"
-              placeholder=""
-              uploadButtonText="Upload"
-              maxSize="1e6"
-              @uploadFinished="finishUpload"
-              @uploadError="errorUpload"
-              @uploadStarted="startUpload"
-            />
-            <div class="upload-result" style="margin-top: 1rem">
-              <div
-                class="alert alert-success"
-                id="upload-success"
-                v-if="uploadResult"
-              >
-                {{ uploadResult.success }} words added to the database
-              </div>
-              <div v-if="fileUploadErrors.length">
-                <div
-                  class="alert alert-warning"
-                  id="file-upload-errors"
-                  v-if="fileUploadErrors.length"
-                >
-                  The upload worked, but there was some previously existing
-                  words:
-                  <div v-for="(e, i) in fileUploadErrors" :key="i" class="card">
-                    <div class="card-body">
-                      <div>
-                        <strong>In the file:</strong>{{ e.file.fa }} /
-                        {{ e.file.fr }}
-                      </div>
-                      <div>
-                        <strong>In the database:</strong>
-                        {{ e.db.langs.join(" / ") }}
-                        <strong>created on: </strong
-                        >{{ new Date(e.db.created).toLocaleDateString() }}
-                        {{ new Date(e.db.created).toLocaleTimeString() }}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CardUploader />
       </b-col>
     </div>
 
@@ -65,93 +16,15 @@
       v-if="langs.length"
     >
       <b-col sm="12" md="8" lg="6" xl="6">
-        <div class="row card border-dark" style="margin-bottom: 1rem">
-          <div class="card-header">
-            <strong>Create a new card:</strong>
-          </div>
-          <div class="card-body">
-            <CardEditor
-              :card="newCard"
-              textButton="Create"
-              @saved="fetchCards"
-            />
-          </div>
-        </div>
+        <CardCreator />
       </b-col>
     </div>
 
     <div class="row justify-content-md-center" style="margin: 1rem">
       <b-col sm="12" md="8" lg="6" xl="6">
-        <div class="row card border-dark" style="margin-bottom: 1rem">
-          <div class="card-header">
-            <div><strong>Card Explorer</strong></div>
-            <div
-              class="container-fluid"
-              @keyup.enter="fetchCards"
-              v-on:submit.prevent
-            >
-              <div class="row">
-                <label
-                  for="'searchcard"
-                  style=""
-                  class="col-sm-3 col-xl-2 col-form-label"
-                  >search:
-                </label>
-                <div class="col-sm-9 col-xl-10">
-                  <input
-                    id="searchcard"
-                    type="text"
-                    maxlength="75"
-                    class="form-control"
-                    placeholder="search"
-                    v-model="searchCard"
-                  />
-                </div>
-              </div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: end;
-                  margin: 0 0.5rem;
-                  margin-top: 0.5rem;
-                "
-              >
-                <button
-                  @click="fetchCards"
-                  class="btn btn-outline-secondary"
-                  type="button"
-                >
-                  search
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div
-                class="col-xl-6"
-                v-for="c in cards"
-                :key="c.id"
-                style="margin-bottom: 0.5rem"
-              >
-                <div class="card">
-                  <CardViewer :card="c" @deleted="fetchCards" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CardExplorer />
       </b-col>
     </div>
-    <b-row style="position: sticky; bottom: 0; z-index: 9000">
-      <b-pagination
-        class="pagination"
-        style="display: flex; justify-content: center"
-        v-model="currentPage"
-        :total-rows="total_cards"
-        :per-page="perPage"
-      ></b-pagination>
-    </b-row>
   </div>
 </template>
 
@@ -161,8 +34,10 @@ import axios from "axios";
 
 import { Card } from "@/types";
 import CardEditor from "@/components/CardEditor.vue";
+import CardCreator from "@/components/CardCreator.vue";
+import CardUploader from "@/components/CardUploader.vue";
+import CardExplorer from "@/components/CardExplorer.vue";
 import CardViewer from "@/components/CardViewer.vue";
-import FileUploader from "@/components/FileUploader.vue";
 axios.defaults.baseURL = "/mikarezoo-flashcards";
 import _ from "lodash";
 
@@ -170,7 +45,9 @@ import _ from "lodash";
   components: {
     CardEditor,
     CardViewer,
-    FileUploader,
+    CardUploader,
+    CardExplorer,
+    CardCreator,
   },
 })
 export default class Home extends Vue {

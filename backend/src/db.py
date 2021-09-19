@@ -15,7 +15,7 @@ from datetime import datetime
 import os
 
 from backend.src import helpers as h
-from backend.src.pytypes import V, Card, CardLang
+from backend.src.pytypes import V, Card, CardLang, conv
 
 
 if not 'MONGO_INITDB_DATABASE' in environ.keys():
@@ -38,13 +38,24 @@ def connect(
 
 connect()
 
-def add_card(c):
+def find_similar_card(c):
+    print('looking for a similar card to', c)
+    already = db.cards.find_one({"langs": {'$elemMatch': {"text": {'$in': [e.text for e in c.langs]}}}})
+    print("---->", already)
+    if already is not None:
+        return conv.structure(already, Card)
+
+
+def add_card(c, check_already=True):
     c.created = datetime.now()
     c.modified = datetime.now()
-    cd = c.toBsonDict()
-    del cd['_id']
-    db.cards.insert_one(cd)
-
+    already = find_similar_card(c)
+    if already is None:
+        cd = c.toBsonDict()
+        del cd['_id']
+        db.cards.insert_one(cd)
+    else:
+        raise Exception('card already exists')
 
 def update_card(c):
     cd = c.toBsonDict()
@@ -57,7 +68,6 @@ def update_card(c):
 
 def get_cards(filtr={}):
     return [V.decode(e) for e in db.cards.find(filtr).sort([("created", pymongo.DESCENDING)])]
-
 
 
 def load_file(filepath):

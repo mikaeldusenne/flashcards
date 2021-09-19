@@ -202,10 +202,18 @@ def train_card():
     
 @flsk.route("/api/add-card", methods=["POST"])
 def add_card():
-    c = conv.structure(request.json, Card)
-    print('SAVE CARD', c)
+    is_new = request.json.get('isNew', False)
+    c = conv.structure(request.json['card'], Card)
+    print('SAVE CARD', c, is_new)
     # logging.exception("exception log")
-    db.update_card(c)
+    if is_new:
+        try:
+            db.add_card(c)
+        except:
+            already = db.find_similar_card(c)
+            return jsonify(dict(card=already.toDict())), 400
+    else:
+        db.update_card(c)
     return "ok", 200
 
 @flsk.route("/api/delete-card", methods=["POST"])

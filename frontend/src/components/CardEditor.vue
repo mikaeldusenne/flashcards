@@ -1,7 +1,6 @@
 <template>
   <!-- @keyup.enter="saveCard" -->
   <div class="container-fluid form" v-on:submit.prevent>
-    -------- {{ getLangs }} --------
     <div v-for="l in card.langs" :key="l.id">
       <div class="row mb-3">
         <label
@@ -76,9 +75,9 @@
 <script lang="ts">
 // import { Component, Prop, Vue } from "vue-property-decorator";
 import { Component, Mixins, Prop } from "vue-property-decorator";
-import axios from "axios";
 import MathMixin from "@/MathMixin";
 
+import axios from "axios";
 import { Card } from "@/types";
 
 @Component({
@@ -87,6 +86,9 @@ import { Card } from "@/types";
 export default class CardEditor extends Mixins(MathMixin) {
   @Prop({ default: "Save" })
   textButton!: string;
+
+  @Prop({ default: false })
+  isNew!: boolean;
 
   @Prop()
   card!: Card;
@@ -114,11 +116,15 @@ export default class CardEditor extends Mixins(MathMixin) {
   saveCard() {
     console.log("add card");
     axios
-      .post("/api/add-card", this.card)
+      .post("/api/add-card", {card: this.card, isNew: this.isNew})
       .then(() => {
         this.$emit("saved");
       })
-      .catch(console.log);
+    .catch(err => {
+      console.log(err.response.data.card)
+      this.$emit("error", err.response.data.card)
+      this.$toast.error(`This card already exists! ${err.response.data.card.langs.map(e => e.text).join(' / ')}`)
+    });
   }
 
   deleteCard() {

@@ -1,0 +1,132 @@
+<template>
+  <div class="row card border-dark" style="margin-bottom: 1rem">
+    <div class="card-header">
+      <div><strong>Card Explorer</strong></div>
+
+      <div
+        class="container-fluid"
+        @keyup.enter="fetchCards"
+        v-on:submit.prevent
+      >
+        <div class="row">
+          <label
+            for="'searchcard"
+            style=""
+            class="col-sm-3 col-xl-2 col-form-label"
+          >search:
+          </label>
+          <div class="col-sm-9 col-xl-10">
+            <input
+              id="searchcard"
+              type="text"
+              maxlength="75"
+              class="form-control"
+              placeholder="search"
+              v-model="searchCard"
+            />
+          </div>
+        </div>
+        <div
+          style="
+                 display: flex;
+                 justify-content: end;
+                 margin: 0 0.5rem;
+                 margin-top: 0.5rem;
+                 "
+        >
+          <button
+            @click="fetchCards"
+            class="btn btn-outline-secondary"
+            type="button"
+          >
+            search
+          </button>
+        </div>
+      </div>
+      <b-row>
+        <b-pagination
+          class="pagination"
+          style="display: flex; justify-content: center"
+          v-model="currentPage"
+          :total-rows="total_cards"
+          :per-page="perPage"
+        ></b-pagination>
+      </b-row>
+
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div
+          class="col-xl-6"
+          v-for="c in cards"
+          :key="c.id"
+          style="margin-bottom: 0.5rem"
+        >
+          <div class="card">
+            <CardViewer :card="c" @deleted="fetchCards" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Vue, Watch } from "vue-property-decorator";
+import axios from "axios";
+
+import { Card } from "@/types";
+import CardEditor from "@/components/CardEditor.vue";
+import CardViewer from "@/components/CardViewer.vue";
+
+import _ from "lodash";
+
+@Component({
+  components: {
+    CardEditor,
+    CardViewer,
+  },
+})
+export default class Home extends Vue {
+  total_cards = 0;
+  cards: Card[] = [];
+
+  perPage = 25;
+  currentPage = 1;
+
+  searchCard = "";
+
+
+  fetchCards() {
+    axios
+    .get("/api/cards", {
+      params: {
+        first: this.perPage,
+        offset: (this.currentPage - 1) * this.perPage,
+        search: this.searchCard,
+      },
+    })
+    .then((resp) => {
+      console.log("cards:");
+      console.log(resp.data);
+      this.total_cards = resp.data.n;
+      this.cards = resp.data.cards.map((e) => {
+        e.langs = _.sortBy(e.langs, [(ee) => ee.lang]);
+        return e;
+      });
+    })
+    .catch(console.log);
+  }
+
+  @Watch("currentPage")
+  cpchgd() {
+    this.fetchCards();
+  }
+
+  mounted() {
+    this.fetchCards();
+  }
+}
+</script>
+
+<style></style>
