@@ -5,24 +5,18 @@
       style="margin: 1rem"
       v-if="langs.length"
     >
-      <b-col sm="12" md="8" lg="6" xl="6">
-        <CardUploader />
-      </b-col>
-    </div>
-
-    <div
-      class="row justify-content-md-center"
-      style="margin: 1rem"
-      v-if="langs.length"
-    >
-      <b-col sm="12" md="8" lg="6" xl="6">
-        <CardCreator />
-      </b-col>
-    </div>
-
-    <div class="row justify-content-md-center" style="margin: 1rem">
-      <b-col sm="12" md="8" lg="6" xl="6">
-        <CardExplorer />
+      <b-col sm="12" md="10" lg="10" xl="8">
+        <b-tabs content-class="mt-3" lazy>
+          <b-tab title="Explore">
+            <CardExplorer />
+          </b-tab>
+          <b-tab title="Create">
+            <CardCreator />
+          </b-tab>
+          <b-tab title="Import from csv">
+            <CardUploader />
+          </b-tab>
+        </b-tabs>
       </b-col>
     </div>
   </div>
