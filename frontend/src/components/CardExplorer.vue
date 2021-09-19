@@ -26,6 +26,20 @@
             />
           </div>
         </div>
+        
+        <div class="row mb-3 list-item-form">
+          <label for="lang-match-search" class="col-sm-2 col-form-label"
+          >Deck</label
+               >
+          <div class="col-sm-10">
+            <b-form-select
+              v-model="deck"
+              :options="deckOpts"
+              class="form-control form-control"
+            />
+          </div>
+        </div>
+
         <div
           style="
                  display: flex;
@@ -72,25 +86,28 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
-import axios from "axios";
+import { Component, Mixins, Watch } from "vue-property-decorator";
+import MathMixin from "@/MathMixin";
 
+import axios from "axios";
 import { Card } from "@/types";
 import CardEditor from "@/components/CardEditor.vue";
 import CardViewer from "@/components/CardViewer.vue";
 
 import _ from "lodash";
 
+
 @Component({
   components: {
     CardEditor,
     CardViewer,
   },
+  mixins: [MathMixin],
 })
-export default class Home extends Vue {
+export default class Home extends Mixins(MathMixin) {
   total_cards = 0;
   cards: Card[] = [];
-
+  deck: string | null = null;
   perPage = 25;
   currentPage = 1;
 
@@ -104,6 +121,7 @@ export default class Home extends Vue {
         first: this.perPage,
         offset: (this.currentPage - 1) * this.perPage,
         search: this.searchCard,
+        deck: this.deck,
       },
     })
     .then((resp) => {

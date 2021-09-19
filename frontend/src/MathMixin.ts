@@ -2,10 +2,11 @@ import { Component, Vue } from "vue-property-decorator";
 import { mapGetters } from "vuex";
 
 @Component({
-  computed: mapGetters(["getLangs"]),
+    computed: mapGetters(["getLangs", "getDecks"]),
 })
 export default class MathMixin extends Vue {
   getLangs!: any[];
+  getDecks!: any[];
 
   prettyN(n) {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -49,6 +50,15 @@ export default class MathMixin extends Vue {
       console.log(this.getLangs);
     }
     return pretty ? pretty.title : e;
+  }
+  
+  get deckOpts(){
+      return [{text: "Select a deck...", value: null}].concat(this.getDecks.map(e => {
+          return {
+              text: e.title,
+              value: e.id,
+          }
+      }))
   }
 
 }

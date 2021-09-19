@@ -13,7 +13,7 @@ from pprint import pprint
 from os import environ
 import os
 
-from backend.src.pytypes import conv, Card, CardLang, V
+from backend.src.pytypes import conv, Card, CardLang, V, Deck
 import backend.src.helpers as h
 import backend.src.db as db
 
@@ -67,9 +67,13 @@ def get_cards():
     args = {}
     if "search" in request.args and request.args['search'] is not None and len(request.args['search']):
         args['langs'] = {'$elemMatch': {"text": {"$regex": h.prepare_user_input_search_regex(request.args['search'])}}}
-    cards = db.db.cards.find(args)
-    
+    if "deck" in request.args and request.args['deck'] is not None and len(request.args['deck']):
+        args['decks'] = {'$elemMatch': {"$eq": request.args['deck']}}
+        
     total_n = db.db.cards.count_documents(args)
+    
+        
+    cards = db.db.cards.find(args)
     
     if "offset" in request.args:
         cards = cards.skip(int(request.args["offset"]))
@@ -122,7 +126,7 @@ def update_usercard():
 def describe_card(card_id):
     return " / ".join([e['text'] for e in db.db.cards.find_one({'_id': ObjectId(str(card_id))})['langs']])
 
-def _train_cards(user):
+def _train_cards(user, deck=None):
     # db.db.usercards.find({user: user}, {'_id': 0})
     # from bson import ObjectId
     # db.db.usercards.find_one({'user': 'mika', "card": ObjectId('6147176f65625f5c941084dd')})
@@ -146,11 +150,19 @@ def _train_cards(user):
         e["card"] = V.decode(e['card']).toDict()
         return e
     
-    usercards = {e["card"]['id']: e for e in map(prepare_user_card, usercards)}
+    usercards = {
+        e["card"]['id']: e
+        for e in map(prepare_user_card, usercards)
+        if deck is None or deck in e['card'].get("decks", [])
+    }
     
     # usercards
     # cards = {c.id: c for c in db.get_cards()}
-    for c in db.get_cards():
+    matchd = {}
+    if deck is not None:
+        matchd["decks"] = {'$elemMatch': {"$eq": deck}}
+        
+    for c in db.get_cards(matchd):
         cd = c.toDict()
         if cd['id'] not in usercards:
             usercards[cd['id']] = dict(
@@ -171,16 +183,17 @@ def _train_cards(user):
 @flsk.route("/api/train-cards", methods=["GET"])
 def train_cards():
     user = request.args['user']
-    return jsonify(_train_cards(user))
+    return jsonify(_train_cards(user, request.args.get('deck')))
     
 
 @flsk.route("/api/train-card", methods=["GET"])
 def train_card():
-    print("selecting a random card")
     user = request.args['user']
+    deck = request.args.get('deck')
     current = request.args.get('current')
+    print("selecting a random card", user, deck)
     
-    cards = [e for e in _train_cards(user) if e['card']['id']!=current]
+    cards = [e for e in _train_cards(user, deck) if e['card']['id']!=current]
     bucket_weights = {
         k: v for k, v in {
             0: 0.6,
@@ -198,6 +211,19 @@ def train_card():
     print("-> card: ", describe_card(card['card']['id']))
     return jsonify(dict(card=card))
     
+    
+    
+@flsk.route("/api/decks", methods=["GET", "POST", "DELETE"])
+def decks():
+    if request.method == "GET":
+        return jsonify([V.decode(e).toDict() for e in db.db.decks.find()])
+    elif request.method == "POST":
+        print('save deck', request.json)
+        db.update_deck(conv.structure(request.json, Deck))
+        return "ok", 200
+    elif request.method == "DELETE":
+        db.delete_deck(request.args['id'])
+        return "ok", 200
     
     
 @flsk.route("/api/add-card", methods=["POST"])

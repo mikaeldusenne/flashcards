@@ -202,6 +202,16 @@ class CardLang(V):
 class Card(V):
     langs: List[CardLang]
     id: str = attr.ib(default=None)
+    decks: List[str] = attr.ib(default=attr.Factory(list))
     created: datetime = attr.ib(default=datetime.fromtimestamp(0))
     modified: datetime = attr.ib(default=datetime.fromtimestamp(0))
+
+
+@attr.s(auto_attribs=True)
+class Deck(V):
+    title: str
+    # cards: List[str]
+    created: datetime = attr.ib(default=datetime.fromtimestamp(0))
+    modified: datetime = attr.ib(default=datetime.fromtimestamp(0))
+    id: str = attr.ib(default=None)
 

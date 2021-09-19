@@ -43,7 +43,7 @@ def find_similar_card(c):
     already = db.cards.find_one({"langs": {'$elemMatch': {"text": {'$in': [e.text for e in c.langs]}}}})
     print("---->", already)
     if already is not None:
-        return conv.structure(already, Card)
+        return V.decode(already)
 
 
 def add_card(c, check_already=True):
@@ -102,6 +102,26 @@ def insert_file(filecontent: werkzeug.datastructures.FileStorage):
         filecontent.save(filepath)
         return load_file(filepath)
 
+def get_deck(title):
+    d = db.decks.find_one({"title": title})
+    if d is not None:
+        return V.decode(d)
+
+def update_deck(d):
+    dd = d.toBsonDict()
+    if d.id is None or not len(d.id):
+        del dd['_id']
+        return db.decks.insert_one(dd)
+    else:
+        db.decks.replace_one({"_id": dd['_id']}, d.toBsonDict(), upsert=True)
+
+def delete_deck(id):
+    if type(id) == str:
+        id = ObjectId(id)
+    return db.decks.delete_one({"_id": id})
+
+
+
     
 def create_indexes():
     db.usercards.create_index(
@@ -111,7 +131,10 @@ def create_indexes():
         ],
         unique=True
     )
+    db.decks.create_index(
+        [
+            ("title", 1),
+        ],
+        unique=True
+    )
     
-    
-
-

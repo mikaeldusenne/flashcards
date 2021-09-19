@@ -5,7 +5,8 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    langs: [],
+      langs: [],
+      decks: [],
     user: {
       id: null,
       credits: {},
@@ -16,6 +17,9 @@ export default new Vuex.Store({
   mutations: {
     changeLangs(state, langs) {
       state.langs = langs;
+    },
+    changeDecks(state, decks) {
+      state.decks = decks;
     },
     changeUser(state, user) {
       state.user = user;
@@ -31,6 +35,9 @@ export default new Vuex.Store({
     setLangs({ commit }, langs) {
       commit("changeLangs", langs);
     },
+    setDecks({ commit }, decks) {
+      commit("changeDecks", decks);
+    },
     setLoggedIn({ commit }, b) {
       commit("changeLoggedIn", b);
     },
@@ -38,6 +45,7 @@ export default new Vuex.Store({
   modules: {},
   getters: {
     getLangs: (state) => state.langs,
+    getDecks: (state) => state.decks,
     getId: (state) => state.user.id,
     getUser: (state) => state.user,
     getLoggedIn: (state) => state.loggedIn,

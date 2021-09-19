@@ -22,6 +22,21 @@
                 />
               </div>
             </div>
+
+            <div class="row mb-3 list-item-form">
+              <label for="lang-match-search" class="col-sm-2 col-form-label"
+              >Deck</label
+                   >
+              <div class="col-sm-10">
+                <b-form-select
+                  v-model="deck"
+                  :options="deckOpts"
+                  class="form-control form-control"
+                />
+              </div>
+            </div>
+
+            
             <div class="row mb-2 list-item-form">
               <label for="lang-match-search" class="col-sm-2 col-form-label"
                 >Language</label
@@ -179,22 +194,29 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import axios from "axios";
+import { Component, Mixins } from "vue-property-decorator";
+import MathMixin from "@/MathMixin";
 
-import { Card } from "@/types";
+import axios from "axios";
 import CardViewer from "@/components/CardViewer.vue";
+
+import _ from "lodash";
+
+
+
 axios.defaults.baseURL = "/mikarezoo-flashcards";
 
 @Component({
   components: {
     CardViewer,
   },
+  mixins: [MathMixin],
 })
-export default class Train extends Vue {
+export default class Train extends Mixins(MathMixin) {
   training = false;
   showResult = false;
 
+  deck: string | null = null;
   selectedDifficulty = null;
   difficulties = ["easy", "normal", "hard"];
   cards: any[] = [];
@@ -216,8 +238,6 @@ export default class Train extends Vue {
 
   uploadResult: any | null = null;
   user = "آرزو";
-
-  newCard: Card = { id: "", langs: [] };
 
   setDifficulty(e) {
     this.selectedDifficulty = e;
@@ -241,21 +261,21 @@ export default class Train extends Vue {
     this.training = false;
   }
 
-  moveCard(k) {
-    this.selectedDifficulty = null;
-    // console.log('movecard ' + k)
-    this.showResult = false;
-    if (this.currentCard) {
-      const currentIndex = this.cards
-        .map((e) => e.card.id)
-        .indexOf(this.currentCard.card.id);
-      const nextid = (k + currentIndex + this.cards.length) % this.cards.length;
-      this.currentCard = this.cards[nextid];
-    } else {
-      console.log("init");
-      this.currentCard = this.cards[0];
-    }
-  }
+  // moveCard(k) {
+  //   this.selectedDifficulty = null;
+  //   // console.log('movecard ' + k)
+  //   this.showResult = false;
+  //   if (this.currentCard) {
+  //     const currentIndex = this.cards
+  //       .map((e) => e.card.id)
+  //       .indexOf(this.currentCard.card.id);
+  //     const nextid = (k + currentIndex + this.cards.length) % this.cards.length;
+  //     this.currentCard = this.cards[nextid];
+  //   } else {
+  //     console.log("init");
+  //     this.currentCard = this.cards[0];
+  //   }
+  // }
 
   nextCard() {
     this.selectedDifficulty = null;
@@ -266,6 +286,7 @@ export default class Train extends Vue {
         params: {
           user: this.user,
           current: this.currentCard ? this.currentCard.card.id : null,
+          deck: this.deck,
         },
       })
       .then((resp) => {

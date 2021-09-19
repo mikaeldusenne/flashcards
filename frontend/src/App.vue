@@ -34,6 +34,14 @@ export default class App extends Vue {
       .catch(console.error);
     })
     .catch(console.log);
+
+    axios.get('/api/decks').then(resp => {
+      this.$store
+      .dispatch("setDecks", resp.data)
+      .then(console.log)
+      .catch(console.error);
+    }).catch(console.log)
+
   }
 }
 </script>

@@ -22,11 +22,11 @@
             <strong>{{ l.text }}</strong>
           </h2>
         </div>
-        <div v-for="(l, i) in card.langs" :key="i">
+        <div v-for="(l, i) in card.langs" :key="`comments${i}`">
           <div>
             <h6>{{ l.comment }}</h6>
           </div>
-          <div v-for="e in l.examples" :key="e">{{ e }}</div>
+          <div v-for="e in l.examples" :key="`${e}`">{{ e }}</div>
           <hr v-if="i < displayLangs.length - 1" />
         </div>
       </div>

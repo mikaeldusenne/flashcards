@@ -1,6 +1,21 @@
 <template>
   <!-- @keyup.enter="saveCard" -->
   <div class="container-fluid form" v-on:submit.prevent>
+    <div class="row mb-3 list-item-form">
+      <label for="lang-match-search" class="col-sm-2 col-form-label"
+      >Deck</label
+           >
+      <div class="col-sm-10">
+        <b-form-select
+          multiple
+          id="lang-match-search"
+          v-model="card.decks"
+          :options="deckOpts"
+          class="form-control form-control"
+        />
+      </div>
+    </div>
+
     <div v-for="l in card.langs" :key="l.id">
       <div class="row mb-3">
         <label
@@ -99,19 +114,6 @@ export default class CardEditor extends Mixins(MathMixin) {
     { id: "fr", title: "Français" },
     { id: "fa", title: "فارسی" },
   ];
-
-  setupCard() {
-    this.langs.forEach((lang) => {
-      if (this.card.langs.find((e) => e.lang == lang.id) == undefined) {
-        this.card.langs.push({
-          lang: lang.id,
-          text: "",
-          comment: "",
-          // examples: [],
-        });
-      }
-    });
-  }
 
   saveCard() {
     console.log("add card");
