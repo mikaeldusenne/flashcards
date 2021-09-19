@@ -1,0 +1,33 @@
+version: '3'
+services:
+  app:
+    command: "gunicorn -c backend/configunicorn.py --log-level debug backend.wsgi:app --access-logfile gunicorn.log"
+  nginx:
+    depends_on: [app]
+    networks:
+      - mikarezoo-flashcards_network
+    image: nginx
+    environment:
+      - PROD=1
+    volumes:
+      - "./nginx/nginx_conf:/etc/nginx:ro"
+    ports:
+      - "80987:80"
+  mongo-backups:
+    image: mikaeldusenne/mikarezoo-flashcards_mongo_backups
+    networks:
+      - mikarezoo-flashcards_network
+    build:
+      context: "./mongo/mongobackup"
+    env_file:
+      - ./mongo/.env
+      - ./mongo/mongobackup/.env
+    volumes:
+      - ./mongo/mongobackup/backups:/backup
+    depends_on:
+      - mongo
+
+      
+networks:
+  mikarezoo-flashcards_network:
+    driver: bridge
