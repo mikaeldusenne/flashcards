@@ -58,7 +58,7 @@ export default class MathMixin extends Vue {
   }
 
     get deckOpts() {
-        const firstopt: any = { text: "Select a deck...", value: null, disabled: true };
+        const firstopt: any = { text: "Select a deck...", value: null};
       return [firstopt].concat(
       this.getDecks.map((e) => {
         return {
