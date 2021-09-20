@@ -89,7 +89,7 @@
 
 <script lang="ts">
 // import { Component, Prop, Vue } from "vue-property-decorator";
-import { Component, Mixins, Prop } from "vue-property-decorator";
+import { Component, Mixins, Prop, Watch } from "vue-property-decorator";
 import MathMixin from "@/MathMixin";
 
 import axios from "axios";
@@ -107,9 +107,17 @@ export default class CardEditor extends Mixins(MathMixin) {
 
   @Prop()
   card!: Card;
-
+  
+  @Prop({default: true})
+  showAdvancedDefault!: boolean;
+  
   showAdvanced = false;
-
+  
+  @Watch("showAdvancedDefault")
+  advchgd(v){
+    this.showAdvanced = v;
+  }
+  
   langs: any[] = [
     { id: "fr", title: "Français" },
     { id: "fa", title: "فارسی" },
@@ -141,6 +149,10 @@ export default class CardEditor extends Mixins(MathMixin) {
         this.$emit("deleted");
       })
       .catch(console.log);
+  }
+
+  mounted(){
+    this.showAdvanced = this.showAdvancedDefault;
   }
 }
 </script>

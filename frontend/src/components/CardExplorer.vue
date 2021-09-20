@@ -58,7 +58,7 @@
           </button>
         </div>
       </div>
-      <b-row>
+      <b-row v-show="!editing">
         <b-pagination
           class="pagination"
           style="display: flex; justify-content: center"
@@ -69,18 +69,21 @@
       </b-row>
     </div>
     <div class="card-body">
-      <div class="row">
+      <transition-group name="listtr" tag="div" class="row" >
+
         <div
-          class="col-xl-6"
-          v-for="c in cards"
+          class="listtr-item"
+          :class="{'col-sm-6': !editing, 'col-md-4': !editing, 'col-lg-4': !editing, 'col-xl-3': !editing, 'col-md-12': editing}"
+          v-for="c in cards.filter(e => !editing || e.id==editing )"
           :key="c.id"
           style="margin-bottom: 0.5rem"
         >
           <div class="card">
-            <CardViewer :card="c" @deleted="fetchCards" />
+            <CardViewer :card="c" @deleted="fetchCards"  @editing="toggleEditing"/>
           </div>
         </div>
-      </div>
+        
+      </transition-group>
     </div>
   </div>
 </template>
@@ -107,32 +110,41 @@ export default class Home extends Mixins(MathMixin) {
   total_cards = 0;
   cards: Card[] = [];
   deck: string | null = null;
-  perPage = 25;
+  perPage = 28;
   currentPage = 1;
 
+  editing: string | null = null;
+
   searchCard = "";
+
+  toggleEditing(cardId, b){
+    console.log("TOGGLE EDITING")
+    console.log(cardId)
+    console.log(b)
+    this.editing = b ? cardId : null;
+  }
 
   fetchCards() {
     console.log('DECK:')
     axios
     .get("/api/cards", {
-        params: {
-          first: this.perPage,
-          offset: (this.currentPage - 1) * this.perPage,
-          search: this.searchCard,
-          deck: this.deck,
-        },
-      })
-      .then((resp) => {
-        console.log("cards:");
-        console.log(resp.data);
-        this.total_cards = resp.data.n;
-        this.cards = resp.data.cards.map((e) => {
-          e.langs = _.sortBy(e.langs, [(ee) => ee.lang]);
-          return e;
-        });
-      })
-      .catch(console.log);
+      params: {
+        first: this.perPage,
+        offset: (this.currentPage - 1) * this.perPage,
+        search: this.searchCard,
+        deck: this.deck,
+      },
+    })
+    .then((resp) => {
+      console.log("cards:");
+      console.log(resp.data);
+      this.total_cards = resp.data.n;
+      this.cards = resp.data.cards.map((e) => {
+        e.langs = _.sortBy(e.langs, [(ee) => ee.lang]);
+        return e;
+      });
+    })
+    .catch(console.log);
   }
 
   @Watch("currentPage")
@@ -146,4 +158,33 @@ export default class Home extends Mixins(MathMixin) {
 }
 </script>
 
-<style></style>
+<style scoped>
+.listtr-item {
+  transition: all .25s;
+  display: inline-block;
+}
+
+/* .listtr-enter, .listtr-leave-to{
+   opacity: 0;
+   transform: rotate(0.1turn);
+transform: translateX(-600px);
+}
+ */
+
+.listtr-leave-to{
+  opacity: 0;
+  /* transform: rotate(0.1turn); */
+  /* transform: translateX(-800px); */
+}
+
+.listtr-enter{
+  opacity: 0;
+  /* transform: rotate(0.1turn); */
+  /* transform: translateX(100px); */
+}
+
+.listtr-leave-active {
+  position: absolute;
+}
+
+</style>

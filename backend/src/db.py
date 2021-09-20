@@ -1,4 +1,6 @@
 from pymongo import MongoClient
+from pymongo.collation import Collation, CollationStrength
+
 import werkzeug
 import pandas as pd
 from bson import ObjectId
@@ -118,11 +120,11 @@ def get_decks_with_n_cards(argmatch=None):
         {'$addFields': {"n_cards": {'$size': "$cards"}}},
         {'$project': {"_id": {'$toString': "$_id"}, "title": 1, "n_cards": 1}},
         {'$project': {"idstr": 0, "cards": 0}},
+        {'$sort': {"title": 1}}
     ]
     if argmatch is not None:
         agg = [{"$match": argmatch}] + agg
-    l = list(db.decks.aggregate(agg))
-
+    l = list(db.decks.aggregate(agg, collation=Collation(locale="fr")))
     return l
 
 def get_decks(argmatch=None):

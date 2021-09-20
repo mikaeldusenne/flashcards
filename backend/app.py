@@ -223,7 +223,7 @@ def decks():
         db.update_deck(conv.structure(request.json, Deck))
         return "ok", 200
     elif request.method == "DELETE":
-        db.delete_deck(request.args['id'])
+        db.delete_deck(request.json['id'])
         return "ok", 200
     
     

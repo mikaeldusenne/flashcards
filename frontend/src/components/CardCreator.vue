@@ -7,6 +7,7 @@
       <div class="card-body">
         <CardEditor
           :isNew="true"
+          :showAdvancedDefault="true"
           :card="newCard"
           textButton="Create"
           @saved="resetCard"
@@ -109,6 +110,7 @@ export default class CardCreator extends Mixins(MathMixin) {
     );
     this.newCard.langs = this.newCard.langs.map((e) => {
       e.text = "";
+      e.comment = "";
       return e;
     });
   }
@@ -156,7 +158,7 @@ export default class CardCreator extends Mixins(MathMixin) {
 
   deleteDeck(e) {
     axios
-      .delete("/api/decks", { params: { id: e.id } })
+      .delete("/api/decks", { data: { id: e._id } })
       .then((resp) => {
         console.log(resp);
         this.fetchDecks();

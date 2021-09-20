@@ -5,7 +5,7 @@
         class="card-viewer-title"
         style="margin: 0.5rem"
         :class="{ editable: editable }"
-        @click="editing = !editing"
+        @click="toggleEditing"
         v-if="!detailed"
       >
         <strong>
@@ -15,7 +15,7 @@
       <div
         v-else
         style="margin-top: 0.5rem; text-align: center"
-        @click="editing = !editing"
+        @click="toggleEditing"
       >
         <div v-for="(l, i) in displayLangs" :key="i">
           <h2>
@@ -35,7 +35,7 @@
       <div v-if="editable && editing">
         <CardEditor
           :card="card"
-          @saved="editing = false"
+          @saved="toggleEditing(false)"
           @deleted="$emit('deleted')"
         ></CardEditor>
       </div>
@@ -56,7 +56,9 @@ import CardEditor from "@/components/CardEditor.vue";
   mixins: [MathMixin],
 })
 export default class CardViewer extends Mixins(MathMixin) {
-    @Prop()
+  editing = false;
+  
+  @Prop()
   card!: Card;
 
   @Prop({ default: true })
@@ -78,7 +80,14 @@ export default class CardViewer extends Mixins(MathMixin) {
     return this.card.langs.map(e => e.comment).filter(e => e)
   }
 
-  editing = false;
+  toggleEditing(v){
+    
+    this.editing = v==undefined ? !this.editing : v
+    console.log("CARDVIEWER EDITING IS NOW:")
+    console.log(this.editing)
+    this.$emit('editing', this.card.id, this.editing)
+  }
+  
 }
 </script>
 
