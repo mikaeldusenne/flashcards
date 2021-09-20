@@ -210,8 +210,8 @@ class Card(V):
 @attr.s(auto_attribs=True)
 class Deck(V):
     title: str
-    # cards: List[str]
     created: datetime = attr.ib(default=datetime.fromtimestamp(0))
     modified: datetime = attr.ib(default=datetime.fromtimestamp(0))
     id: str = attr.ib(default=None)
+    cards: List[str] = attr.ib(default=attr.Factory(list))
 

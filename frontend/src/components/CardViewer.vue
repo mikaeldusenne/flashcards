@@ -22,12 +22,12 @@
             <strong>{{ l.text }}</strong>
           </h2>
         </div>
-        <div v-for="(l, i) in card.langs" :key="`comments${i}`">
+        <hr v-if="allComments.length > 0" />
+        <div v-for="(comment, i) in allComments" :key="`comments${i}`">
           <div>
-            <h6>{{ l.comment }}</h6>
+            <h6><pre>{{ comment }}</pre></h6>
           </div>
-          <div v-for="e in l.examples" :key="`${e}`">{{ e }}</div>
-          <hr v-if="i < displayLangs.length - 1" />
+          <!-- <div v-for="e in l.examples" :key="`${e}`">{{ e }}</div> -->
         </div>
       </div>
       <!-- <div><strong>created: </strong>{{new Date(card.created).toLocaleDateString()}} {{new Date(card.created).toLocaleTimeString()}}</div>
@@ -44,7 +44,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Mixins, Prop } from "vue-property-decorator";
+import MathMixin from "@/MathMixin";
 
 import { Card } from "@/types";
 
@@ -52,9 +53,10 @@ import CardEditor from "@/components/CardEditor.vue";
 
 @Component({
   components: { CardEditor },
+  mixins: [MathMixin],
 })
-export default class CardViewer extends Vue {
-  @Prop()
+export default class CardViewer extends Mixins(MathMixin) {
+    @Prop()
   card!: Card;
 
   @Prop({ default: true })
@@ -72,6 +74,10 @@ export default class CardViewer extends Vue {
     );
   }
 
+  get allComments(){
+    return this.card.langs.map(e => e.comment).filter(e => e)
+  }
+
   editing = false;
 }
 </script>
@@ -83,5 +89,8 @@ export default class CardViewer extends Vue {
 
 .card-viewer-title.editable {
   cursor: pointer;
+}
+pre{
+  font-family: Avenir, Helvetica, Arial, sans-serif !important;
 }
 </style>

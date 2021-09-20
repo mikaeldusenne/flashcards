@@ -59,6 +59,7 @@ def add_card(c, check_already=True):
 
 def update_card(c):
     cd = c.toBsonDict()
+    
     if cd["_id"] == "" or cd["_id"] is None:
         add_card(c)
     else:
@@ -70,7 +71,7 @@ def get_cards(filtr={}):
     return [V.decode(e) for e in db.cards.find(filtr).sort([("created", pymongo.DESCENDING)])]
 
 
-def load_file(filepath):
+def load_file(filepath, decks=None):
     df = pd.read_csv(filepath)
     print(df.to_dict(orient="records"))
     assert all([e in "fa fr".split() for e in df.columns])
@@ -78,7 +79,7 @@ def load_file(filepath):
     success = 0
     for e in df.to_dict(orient="records"):
         # print(e)
-        texts = list(e.values())
+        texts = list([v for k, v in e.items() if k in ["fa", "fr"]])
         existing = db.cards.find_one({"langs": {'$elemMatch': {"text": {'$in': texts}}}})
         if existing is not None:
             errors.append({"file": e, "db": V.decode(existing).toDict()})
@@ -86,6 +87,8 @@ def load_file(filepath):
         else:
             success += 1
             c = Card(langs=[CardLang(lang=lang, text=text) for lang, text in e.items()])
+            if decks is not None:
+                c.decks = decks
             add_card(c)
     
     return dict(
@@ -95,17 +98,50 @@ def load_file(filepath):
     )
 
 
-def insert_file(filecontent: werkzeug.datastructures.FileStorage):
+def insert_file(filecontent: werkzeug.datastructures.FileStorage, decks=None):
     destdir = './backend/data/'
     with TemporaryDirectory() as tmpdirname:
         filepath = os.path.join(tmpdirname, filecontent.name)
         filecontent.save(filepath)
-        return load_file(filepath)
+        return load_file(filepath, decks=decks)
 
-def get_deck(title):
-    d = db.decks.find_one({"title": title})
-    if d is not None:
-        return V.decode(d)
+
+def get_decks_with_n_cards(argmatch=None):
+    agg = [
+        { "$project": { "idstr": { "$toString": "$_id" }, "title": 1}},
+        {'$lookup': {
+            "from": "cards",
+            "localField": "idstr",
+            "foreignField": "decks",
+            "as": "cards",
+        }},
+        {'$addFields': {"n_cards": {'$size': "$cards"}}},
+        {'$project': {"_id": {'$toString': "$_id"}, "title": 1, "n_cards": 1}},
+        {'$project': {"idstr": 0, "cards": 0}},
+    ]
+    if argmatch is not None:
+        agg = [{"$match": argmatch}] + agg
+    l = list(db.decks.aggregate(agg))
+
+    return l
+
+def get_decks(argmatch=None):
+    agg = [
+        { "$project": { "idstr": { "$toString": "$_id" }, "title": 1}},
+        {'$lookup': {
+            "from": "cards",
+            "localField": "idstr",
+            "foreignField": "decks",
+            "as": "cards",
+        }},
+        {'$project': {"idstr": 0}},
+    ]
+    if argmatch is not None:
+        agg = [{"$match": argmatch}] + agg
+    l = list(db.decks.aggregate(agg))
+    
+    if len(l) > 0:
+        return V.decode(l[0])
 
 def update_deck(d):
     dd = d.toBsonDict()
@@ -138,3 +174,19 @@ def create_indexes():
         unique=True
     )
     
+def create_views():
+    db.command({
+        "create": "deck_view",
+        "viewOn": "deck", 
+        "pipeline": [
+            { "$project": { "idstr": { "$toString": "$_id" }, "title": 1}},
+            {'$lookup': {
+                "from": "cards",
+                "localField": "idstr",
+                "foreignField": "decks",
+                "as": "cards",
+            }},
+            {'$project': {"cards.decks": 0, "idstr": 0}},
+        ]
+    })
+

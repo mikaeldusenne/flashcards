@@ -18,19 +18,9 @@
       class="card card-footer"
       v-if="filepath && (fileTooLarge || !uploadOnFocusOut)"
     >
-      <div class="progress" v-if="loading">
-        <div
-          class="progress-bar"
-          role="progressbar"
-          :style="{ width: uploadpercent }"
-          aria-valuenow="0"
-          aria-valuemin="0"
-          aria-valuemax="100"
-        ></div>
-      </div>
       <button
         :disabled="fileTooLarge"
-        v-else-if="fileTooLarge || !uploadOnFocusOut"
+        v-if="fileTooLarge || !uploadOnFocusOut"
         class="btn btn-primary"
         @click="upload"
       >
@@ -81,28 +71,10 @@ export default class FileUploader extends Vue {
 
   private loading = false;
   private uploaded = false;
-  // private uploadPercentage = 0;
-  // private uploadInfo: UploadInfo = {
-  //   started: new Date(),
-  //   transferred: 0,
-  //   toTransfer: 0
-  // };
 
   setFilePath(event) {
     this.filepath = event.target.files[0];
   }
-
-  // get uploadpercent() {
-  //   if (!(this.uploadInfo.transferred && this.uploadInfo.toTransfer)) {
-  //     return "0";
-  //   } else {
-  //     return (
-  //       ((100 * this.uploadInfo.transferred) / this.uploadInfo.toTransfer)
-  //       .toFixed(0)
-  //       .toString() + "%"
-  //     );
-  //   }
-  // }
 
   get formData() {
     if (this.filepath) {
@@ -128,18 +100,6 @@ export default class FileUploader extends Vue {
   }
 
   private upload() {
-    // this.uploadInfo = {
-    //   started: new Date(),
-    //   transferred: NaN,
-    //   toTransfer: NaN
-    // };
-    //
-    // const updateUploadPercentage = evt => {
-    //   this.uploadInfo.transferred = evt.loaded;
-    //   this.uploadInfo.toTransfer = evt.total;
-    //   this.$emit("progress", this.uploadInfo);
-    // };
-
     if (this.filepath && this.endpoint) {
       this.loading = true;
       this.$emit("uploadStarted");
@@ -150,7 +110,6 @@ export default class FileUploader extends Vue {
 
       axios
         .post(this.endpoint, formData, {
-          // onUploadProgress: updateUploadPercentage
         })
         .then((ans) => {
           this.$emit("uploadFinished", ans.data);

@@ -4,8 +4,21 @@
       <strong>Upload from file:</strong>
     </div>
     <div class="card-body">
+      <div class="row mb-3 list-item-form">
+        <label for="lang-match-search" class="col-sm-2 col-xl-1 col-form-label"
+        >Deck</label
+             >
+        <div class="col-sm-10 col-xl-11">
+          <b-form-select
+            v-model="deck"
+            :options="deckOpts"
+            class="form-control form-control"
+          />
+        </div>
+      </div>
+
       <FileUploader
-        :endpoint="'/api/upload'"
+        :endpoint="endpoint"
         placeholder=""
         uploadButtonText="Upload"
         maxSize="1e6"
@@ -36,7 +49,7 @@
                 </div>
                 <div>
                   <strong>In the database:</strong>
-                  {{ e.db.langs.join(" / ") }}
+                  {{ e.db.langs.map(e => e.text).join(" / ") }}
                   <strong>created on: </strong
                   >{{ new Date(e.db.created).toLocaleDateString() }}
                   {{ new Date(e.db.created).toLocaleTimeString() }}
@@ -51,7 +64,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+
+import { Component, Mixins } from "vue-property-decorator";
+import MathMixin from "@/MathMixin";
+
 import axios from "axios";
 
 import FileUploader from "@/components/FileUploader.vue";
@@ -61,10 +77,16 @@ axios.defaults.baseURL = "/mikarezoo-flashcards";
   components: {
     FileUploader,
   },
+  mixins: [MathMixin],
 })
-export default class CardUploader extends Vue {
+export default class CardUploader extends Mixins(MathMixin) {
   uploadResult: any = null;
-
+  deck: string | null = null;
+  
+  get endpoint(){
+    return '/api/upload'+(this.deck?'?decks='+this.deck:'')
+  }
+  
   get fileUploadErrors() {
     return this.uploadResult ? this.uploadResult.errors_details : [];
   }

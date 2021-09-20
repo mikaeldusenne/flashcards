@@ -36,6 +36,7 @@
               v-model="deck"
               :options="deckOpts"
               class="form-control form-control"
+              @change="fetchCards"
             />
           </div>
         </div>
@@ -112,8 +113,9 @@ export default class Home extends Mixins(MathMixin) {
   searchCard = "";
 
   fetchCards() {
+    console.log('DECK:')
     axios
-      .get("/api/cards", {
+    .get("/api/cards", {
         params: {
           first: this.perPage,
           offset: (this.currentPage - 1) * this.perPage,

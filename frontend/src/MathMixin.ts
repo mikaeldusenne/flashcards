@@ -8,6 +8,11 @@ export default class MathMixin extends Vue {
   getLangs!: any[];
   getDecks!: any[];
 
+
+    flatten(l){
+        return (!l || l.length == 0) ? [] : l.length == 1 ? l[0] : l.reduce((acc, e) => acc.concat(e))
+    }
+    
   prettyN(n) {
     return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
@@ -56,10 +61,14 @@ export default class MathMixin extends Vue {
     return [{ text: "Select a deck...", value: null }].concat(
       this.getDecks.map((e) => {
         return {
-          text: e.title,
-          value: e.id,
+          text: `${e.title} (${e.n_cards} card${e.n_cards>1?'s':''})`,
+          value: e._id,
         };
       })
     );
   }
+
+    prettyCardTitle(c){
+        return c.langs.map(e => e.text).join(' / ')
+    }
 }

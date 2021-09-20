@@ -10,5 +10,7 @@ npm i @fortawesome/fontawesome-svg-core
 npm i @fortawesome/free-solid-svg-icons
 npm i @fortawesome/vue-fontawesome@2
 npm i bootstrap-vue@2.20.1
+npm i vue-toastification
+npm i vue-plotly
 
 npm update --save

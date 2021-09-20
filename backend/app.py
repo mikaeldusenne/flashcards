@@ -216,7 +216,8 @@ def train_card():
 @flsk.route("/api/decks", methods=["GET", "POST", "DELETE"])
 def decks():
     if request.method == "GET":
-        return jsonify([V.decode(e).toDict() for e in db.db.decks.find()])
+        # return jsonify([V.decode(e).toDict() for e in db.db.decks.find()])
+        return jsonify(db.get_decks_with_n_cards())
     elif request.method == "POST":
         print('save deck', request.json)
         db.update_deck(conv.structure(request.json, Deck))
@@ -254,7 +255,10 @@ def delete_card():
 @flsk.route('/api/upload', methods=['POST'])
 def engine():
     try:
-        errors = db.insert_file(list(request.files.values())[0])
+        decks = request.args.get('decks')
+        if decks is not None:
+            decks = decks.split(',')
+        errors = db.insert_file(list(request.files.values())[0], decks=decks)
     except Exception as e:
         print('----------------------------------')
         print(e)

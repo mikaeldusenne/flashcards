@@ -17,7 +17,7 @@
                   id="lang-match-search"
                   v-model="user"
                   :options="['Mikaël', 'آرزو']"
-                  @change="getCard"
+                  @change="getCards"
                   class="form-control form-control"
                 />
               </div>
@@ -31,6 +31,7 @@
                 <b-form-select
                   v-model="deck"
                   :options="deckOpts"
+                  @change="getCards"
                   class="form-control form-control"
                 />
               </div>
@@ -72,13 +73,61 @@
         </div>
       </div>
     </b-row>
+    
+    <b-row class="row justify-content-md-center" v-if="showSession">
+      <div class="col col-xs-10 col-lg-6 col-xl-4">
+        <div class="card card-dark-border">
+          <div class="card-body">
+            <div class="alert alert-success">Félicitations! Session terminée.</div>
+            <div><strong>Résultats:</strong></div>
+            <Barplot :xdata="sessionPlot.keys" :ydata="sessionPlot.values" />
+            
+            <div><strong>Overall card repartition {{deck?`for the deck "${deckTitle}"`:''}}:</strong></div>
+            <em>Shows how many cards should be shown often, moderately, or rarely based on your feedback during all your trainings</em>
+            <Barplot :xdata="['often', 'moderately', 'rarely']" :ydata="Object.values(bucketCount)" />
+            <!-- <div style="padding: 1rem; border: 1px solid #ccc; max-height: 15rem; overflow: auto;">
+                 <div class="row" v-for="c in cards" :key="c.id" style="margin-bottom: 0">
+                 {{prettyCardTitle(c.card)}}: {{c.bucket}}
+                 </div>
+                 </div> -->
+          </div>
+        </div>
+      </div>
+    </b-row>
+    
     <b-row
       class="row justify-content-md-center"
       style="margin: 1rem"
       v-if="training"
     >
+      
+      <div
+        style="
+               display: flex;
+               justify-content: center;
+               margin: 0 0.5rem;
+               margin-bottom: 0.5rem;
+               "
+        v-if="showResult"
+      >
+        <div v-for="difficulty in difficulties" :key="difficulty">
+          <button
+            @click="setDifficulty(difficulty)"
+            class="btn btn-control-train"
+            :class="{
+              'btn-outline-secondary': difficulty != selectedDifficulty,
+              'btn-secondary': difficulty == selectedDifficulty,
+            }"
+            type="button"
+          >
+            {{ difficulty }}
+          </button>
+        </div>
+      </div>
+
+      
       <div class="col col-xl-4 col-lg-6 col-sm8 col-xs-12" v-if="currentCard">
-        <div class="card">
+        <div class="card" v-if="!showResult">
           <div class="card-body" style="margin-top: 0.5rem">
             <div id="question">
               <h2>{{ getQuestion(currentCard) }}</h2>
@@ -103,43 +152,14 @@
             </div>
           </div>
         </div>
-
         <cardViewer
+          v-else
           :card="currentCard.card"
           :detailed="true"
-          v-if="showResult"
-          :langs="
-            currentCard.card.langs
-              .map((e) => e.lang)
-              .filter((e) => e != showLang)
-          "
         />
 
-        <div
-          style="
-            display: flex;
-            justify-content: center;
-            margin: 0 0.5rem;
-            margin-top: 0.5rem;
-          "
-          v-if="showResult"
-        >
-          <div v-for="difficulty in difficulties" :key="difficulty">
-            <button
-              @click="setDifficulty(difficulty)"
-              class="btn btn-control-train"
-              :class="{
-                'btn-outline-secondary': difficulty != selectedDifficulty,
-                'btn-secondary': difficulty == selectedDifficulty,
-              }"
-              type="button"
-            >
-              {{ difficulty }}
-            </button>
-          </div>
-        </div>
-        <!-- <cardViewer :card="currentCard.card" :detailed="true" :langs="currentCard.card.langs.map(e => e.lang).filter(e => e != showLang)"></cardViewer>
-        -->
+          
+        
         <div
           style="
             display: flex;
@@ -148,28 +168,6 @@
             margin-top: 0.5rem;
           "
         >
-          <!-- <button
-               @click="showResult = !showResult"
-               class="btn btn-outline-secondary btn-control-train"
-               type="button"
-               
-               >
-               {{showResult?'Hide':'View'}}
-               </button> -->
-          <!-- <button
-               @click="moveCard(-1)"
-               class="btn btn-outline-secondary btn-control-train"
-               type="button"
-               >
-               Previous
-               </button> -->
-          <!-- <button
-               @click="moveCard(+1)"
-               class="btn btn-outline-secondary btn-control-train"
-               type="button"
-               >
-               Next
-               </button> -->
           <button
             @click="exitTrain"
             class="btn btn-outline-secondary btn-control-train"
@@ -178,15 +176,6 @@
             Finish
           </button>
         </div>
-        <!-- <div class="row">
-             <div class="col col-xl-4" v-for="i in [0, 1, 2]">
-             <strong>Bucket #{{i}}</strong>
-             <div v-for="c in cards.filter(e => e.bucket==i )">
-             {{c.card.langs.map(e => e.text).join('/')}}
-             </div>
-             
-             </div>
-             </div> -->
       </div>
     </b-row>
   </div>
@@ -196,14 +185,24 @@
 import { Component, Mixins } from "vue-property-decorator";
 import MathMixin from "@/MathMixin";
 
+
 import axios from "axios";
 import CardViewer from "@/components/CardViewer.vue";
-
+import Barplot from "@/components/Barplot.vue";
 axios.defaults.baseURL = "/mikarezoo-flashcards";
+
+import _ from "lodash";
+
+interface Session{
+  easy: number;
+  normal: number;
+  hard: number;
+}
 
 @Component({
   components: {
     CardViewer,
+    Barplot,
   },
   mixins: [MathMixin],
 })
@@ -211,14 +210,38 @@ export default class Train extends Mixins(MathMixin) {
   training = false;
   showResult = false;
 
+  showSession = false;
+  session : Session = {easy: 10, normal: 20, hard: 15}
+  
+  newSession(){
+    this.session = {easy: 0, normal: 0, hard: 0}
+  }
+
+  get sessionPlot(){
+    const keys = ["hard", "normal", "easy"]
+    return {keys: keys, values: keys.map(e => this.session[e])}
+  }
+  
   deck: string | null = null;
   selectedDifficulty = null;
   difficulties = ["easy", "normal", "hard"];
   cards: any[] = [];
   langs: any[] = [];
 
-  showLang = "fr";
+  get deckTitle(){
+    if(this.deck == null){
+      return null
+    }else{
+      return (this.deckOpts.find(e => e.value)||{}).text
+    }
+  }
+
+  showLang = null;
   langOpts = [
+    {
+      text: "random",
+      value: null,
+    },
     {
       text: "Français -> فارسی",
       value: "fr",
@@ -236,11 +259,25 @@ export default class Train extends Mixins(MathMixin) {
 
   setDifficulty(e) {
     this.selectedDifficulty = e;
+    this.session[e] += 1;
     this.updateUserCard();
   }
 
+  get bucketCount(){
+    return this.cards.map(e => e.bucket).reduce((acc, e) => {
+      acc[e] = (acc[e] || 0) + 1
+      return acc
+    }, [])
+  }
+
   getQuestion(c) {
-    return c.card.langs.find((e) => e.lang == this.showLang).text;
+    if(this.showLang == null){
+      const rnd = Math.random()
+      const len = c.card.langs.length
+      return c.card.langs[Math.floor(rnd * len)].text;
+    }else{
+      return c.card.langs.find((e) => e.lang == this.showLang).text;
+    }
   }
 
   prettyLang(e) {
@@ -248,29 +285,17 @@ export default class Train extends Mixins(MathMixin) {
   }
 
   startTrain() {
+    this.showSession = false;
+    this.newSession();
     this.nextCard();
     this.training = true;
   }
 
   exitTrain() {
     this.training = false;
+    this.showSession = true;
   }
 
-  // moveCard(k) {
-  //   this.selectedDifficulty = null;
-  //   // console.log('movecard ' + k)
-  //   this.showResult = false;
-  //   if (this.currentCard) {
-  //     const currentIndex = this.cards
-  //       .map((e) => e.card.id)
-  //       .indexOf(this.currentCard.card.id);
-  //     const nextid = (k + currentIndex + this.cards.length) % this.cards.length;
-  //     this.currentCard = this.cards[nextid];
-  //   } else {
-  //     console.log("init");
-  //     this.currentCard = this.cards[0];
-  //   }
-  // }
 
   nextCard() {
     this.selectedDifficulty = null;
@@ -286,7 +311,7 @@ export default class Train extends Mixins(MathMixin) {
       })
       .then((resp) => {
         this.currentCard = resp.data.card;
-        this.getCard();
+        this.getCards();
       })
       .catch(console.log);
   }
@@ -305,9 +330,9 @@ export default class Train extends Mixins(MathMixin) {
       .catch(console.log);
   }
 
-  getCard() {
+  getCards() {
     axios
-      .get("/api/train-cards", { params: { user: this.user } })
+      .get("/api/train-cards", { params: { user: this.user, deck: this.deck } })
       .then((resp) => {
         console.log("cards:");
         console.log(resp.data);
@@ -321,7 +346,7 @@ export default class Train extends Mixins(MathMixin) {
   }
 
   mounted() {
-    this.getCard();
+    this.getCards();
     axios
       .get("/api/langs")
       .then((resp) => {

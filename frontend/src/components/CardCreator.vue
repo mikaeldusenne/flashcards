@@ -129,12 +129,23 @@ export default class CardCreator extends Mixins(MathMixin) {
 
   addDeck(e) {
     return axios
-      .post("/api/decks", e)
-      .then((resp) => {
-        console.log(resp);
-        this.fetchDecks();
+    .post("/api/decks", e)
+    .then((resp) => {
+      console.log(resp);
+      this.fetchDecks();
+      
+      axios
+      .get("/api/decks")
+      .then((respp) => {
+        this.$store
+        .dispatch("setDecks", respp.data)
+        .then(console.log)
+        .catch(console.error);
       })
       .catch(console.log);
+
+    })
+    .catch(console.log);
   }
 
   addNewDeck() {
