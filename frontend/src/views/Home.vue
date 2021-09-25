@@ -1,6 +1,5 @@
 <template>
   <div class="container-fluid">
-    {{getUser}}
     <div class="row justify-content-md-center" style="margin: 1rem">
       <b-col sm="12" md="10" lg="10" xl="8">
         <b-tabs content-class="mt-3" lazy>
