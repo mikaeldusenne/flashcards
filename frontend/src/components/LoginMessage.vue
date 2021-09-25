@@ -2,7 +2,7 @@
   <div v-if="!getLoggedIn">
     <div style="text-align: center">
       <p>
-        In order to access all features, please <a @click="$router.push('/login')" href="#">login</a>.
+        In order to access all features, please <router-link to="/login">login</router-link>.
       </p>
     </div>
   </div>

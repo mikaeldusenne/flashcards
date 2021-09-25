@@ -15,7 +15,7 @@
           <a class="nav-link" v-on:click="logout()" href="#"> Logout </a>
         </li>
         <li class="nav-item" v-if="showLogin && !getLoggedIn">
-          <a class="nav-link" href="/login"> Login </a>
+          <b-nav-item to="/login">Login</b-nav-item>
         </li>
         
       </ul>
