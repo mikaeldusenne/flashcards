@@ -12,5 +12,6 @@ npm i @fortawesome/vue-fontawesome@2
 npm i bootstrap-vue@2.20.1
 npm i vue-toastification
 npm i vue-plotly
+npm i vue-popperjs
 
 npm update --save

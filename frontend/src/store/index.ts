@@ -8,8 +8,7 @@ export default new Vuex.Store({
     langs: [],
     decks: [],
     user: {
-      id: null,
-      credits: {},
+      email: null,
       admin: false,
     },
     loggedIn: null,
@@ -23,9 +22,6 @@ export default new Vuex.Store({
     },
     changeUser(state, user) {
       state.user = user;
-    },
-    changeLoggedIn(state, b) {
-      state.loggedIn = b;
     },
   },
   actions: {
@@ -46,8 +42,7 @@ export default new Vuex.Store({
   getters: {
     getLangs: (state) => state.langs,
     getDecks: (state) => state.decks,
-    getId: (state) => state.user.id,
     getUser: (state) => state.user,
-    getLoggedIn: (state) => state.loggedIn,
+    getLoggedIn: (state) => state.user.email != null,
   },
 });

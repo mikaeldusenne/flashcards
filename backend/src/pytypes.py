@@ -9,8 +9,11 @@ import flask_login
 import traceback
 from datetime import datetime
 
+from bson import ObjectId
+
 conv = cattr.Converter()
 conv.register_structure_hook(datetime, lambda t, e: t)
+conv.register_structure_hook(ObjectId, lambda t, e: str(t))
 
 class ElementCannotBeUsedForMongoSchemaCreationError(Exception): pass
 
@@ -91,6 +94,8 @@ class V():
                 return e
         elif type(e)==list:
             return [V.decode(ee) for ee in e]
+        elif type(e)==ObjectId:
+            return str(e)
         else:
             return e
         
@@ -179,15 +184,37 @@ class V():
             raise ex
 
 
+class UserAlreadyExists(Exception): pass
+
 UserId = str
 
+
 @attr.s(auto_attribs=True)
-class User(flask_login.UserMixin):
-    id: UserId
-    password: str
+class User(V, flask_login.UserMixin):
     email: str
+    id: UserId = attr.ib(default=None)
+    password: str = attr.ib(default=None)
+    authenticated: bool = attr.ib(default=False)
+    admin: bool = attr.ib(default=False)
+    active: bool = attr.ib(default=False)
+    activation_link : str = attr.ib(default=None)
+    created: datetime = attr.ib(default=datetime.fromtimestamp(0))
+    modified: datetime = attr.ib(default=datetime.fromtimestamp(0))
     def __repr__(self):
         return f'{self.id} (self.email)'
+    def is_authenticated(self):
+        return self.authenticated
+    def is_admin(self):
+        return self.admin
+    def is_active(self):
+        return self.active
+    def get_id(self):
+        return self.id
+    def is_anonymous(self):
+        return False
+    def __str__(self):
+        return f"User(id='{self.id}', email='{self.email}')"
+
 
 
 @attr.s(auto_attribs=True)
@@ -214,4 +241,6 @@ class Deck(V):
     modified: datetime = attr.ib(default=datetime.fromtimestamp(0))
     id: str = attr.ib(default=None)
     cards: List[str] = attr.ib(default=attr.Factory(list))
+
+
 

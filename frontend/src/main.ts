@@ -13,6 +13,7 @@ import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faMinusSquare } from "@fortawesome/free-solid-svg-icons";
 import { faPlusSquare } from "@fortawesome/free-solid-svg-icons";
 
@@ -25,6 +26,7 @@ Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
 library.add(faEdit);
+library.add(faUser);
 library.add(faMinusSquare);
 library.add(faPlusSquare);
 

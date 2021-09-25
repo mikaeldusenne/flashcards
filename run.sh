@@ -33,7 +33,7 @@ case "$CMD" in
         docker exec -i mikarezoo-flashcards_mongo_docker sh -c "mongorestore --username $MONGO_INITDB_ROOT_USERNAME --password $MONGO_INITDB_ROOT_PASSWORD /dumps/$1"
         ;;
     connect-db)
-        . ./mongo/.env
+        # . ./mongo/.env
         case "$1" in
             user)
                 user=$MONGO_INITDB_USER_USERNAME

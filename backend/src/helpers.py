@@ -7,6 +7,18 @@ import glob
 import os
 import logging
 import pickle
+from os import environ
+
+from time import time
+from hashlib import sha256
+
+
+def get_env_debug():
+    return int(environ.get("DEBUG", environ.get("PROD", 0))) == 1
+
+def generate_activation_link(s):
+    t = time()
+    return sha256(str(s).encode('utf-8')).hexdigest(), t
 
 def clean_str(s):
     return (s.lower().strip()

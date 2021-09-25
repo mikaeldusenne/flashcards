@@ -17,7 +17,7 @@ from datetime import datetime
 import os
 
 from backend.src import helpers as h
-from backend.src.pytypes import V, Card, CardLang, conv
+from backend.src.pytypes import V, Card, CardLang, conv, User, UserAlreadyExists
 
 
 if not 'MONGO_INITDB_DATABASE' in environ.keys():
@@ -192,3 +192,53 @@ def create_views():
         ]
     })
 
+
+
+
+def get_users(filtr={}):
+    userlist = db.users.find(filtr)
+    return list([V.decode(e) for e in userlist])
+
+
+def update_user(userId, d : dict):
+    db.users.update_one({'_id': userId}, {'$set': d})
+
+
+def insert_user(u):
+    u.created = datetime.now()
+    u.modified = u.created
+    d = u.toBsonDict()
+    del d['_id']
+    try:
+        return db.users.insert_one(d)
+    except Exception as ex:
+        print(ex)
+        raise UserAlreadyExists()
+
+
+def get_user(id=None, email=None, filtr={}):
+    if type(id) == str:
+        id = ObjectId(id)
+        
+    d = {k: v for k, v in [('_id', id), ('email', email)] if v is not None}
+    u = db.users.find_one({**filtr, **d})
+    if u is not None:
+        return V.decode(u)
+
+
+def delete_user(id):
+    print('db deleting', id)
+    ans = db.users.delete_one({'_id': id})
+    print(ans)
+
+
+
+
+
+def create_indexes():
+    db.db.users.create_index(
+        [
+            ("email", 1),
+        ],
+        unique=True
+    )

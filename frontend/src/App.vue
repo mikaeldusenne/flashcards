@@ -4,9 +4,19 @@
     <b-row style="text-align: center; margin-top: 1rem"
       ><h1>{{ title }} Flashcards</h1></b-row
     >
-    <div id="content">
+    <div id="content" v-if="getUser.email">
       <router-view />
     </div>
+    <div v-else style="margin-top: 2rem;">
+      <b-container fluid>
+        <b-row class="d-flex justify-content-center">
+          <b-col xs="12" sm="10" xl="4" lg="6">
+            <Login />
+          </b-col>
+        </b-row>
+      </b-container>
+    </div>
+    
   </div>
 </template>
 
@@ -14,36 +24,62 @@
 import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
 import NavBar from "@/components/NavBar.vue";
+import Login from "@/components/Login.vue";
+
+
+import { mapGetters } from "vuex";
+
 
 @Component({
+  computed: mapGetters(["getUser"]),
   components: {
     NavBar,
+    Login,
   },
 })
 export default class App extends Vue {
+  getUser!: any;
+  
   get title() {
     return Math.random() > 0.5 ? "میکارزو" : "Mikarezoo";
   }
   mounted() {
     axios
-      .get("/api/langs", {})
-      .then((resp) => {
+    .get("/login-check", {})
+    .then((resp) => {
+      console.log('LOG CHECK')
+      console.log(resp.data)
+      if(resp.data.email){
         this.$store
-          .dispatch("setLangs", resp.data)
-          .then(console.log)
-          .catch(console.error);
-      })
-      .catch(console.log);
+        .dispatch("setUser", resp.data)
+        .then(console.log)
+        .catch(console.error);
+      }else{
+        console.log("not logged in")
+      }
+    })
+    .catch(console.log);
 
+    
     axios
-      .get("/api/decks")
-      .then((resp) => {
-        this.$store
-          .dispatch("setDecks", resp.data)
-          .then(console.log)
-          .catch(console.error);
-      })
-      .catch(console.log);
+    .get("/api/langs", {})
+    .then((resp) => {
+      this.$store
+      .dispatch("setLangs", resp.data)
+      .then(console.log)
+      .catch(console.error);
+    })
+    .catch(console.log);
+    
+    axios
+    .get("/api/decks")
+    .then((resp) => {
+      this.$store
+      .dispatch("setDecks", resp.data)
+      .then(console.log)
+      .catch(console.error);
+    })
+    .catch(console.log);
   }
 }
 </script>

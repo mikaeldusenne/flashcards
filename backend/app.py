@@ -1,6 +1,9 @@
 from flask import Flask, render_template, jsonify, redirect, flash, request, url_for, Response, Blueprint
 import flask
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_caching import Cache
+# import bcrypt
+from flask_bcrypt import Bcrypt
 import logging
 import random
 from bson import ObjectId
@@ -13,9 +16,13 @@ from pprint import pprint
 from os import environ
 import os
 
-from backend.src.pytypes import conv, Card, CardLang, V, Deck
+from backend.src.pytypes import conv, Card, CardLang, V, Deck, User, UserAlreadyExists
 import backend.src.helpers as h
 import backend.src.db as db
+from backend.src import loggingManager
+from backend.src import MailSender
+
+eventslog = logging.getLogger('events')
 
 cache = Cache(config={
     # 'CACHE_TYPE': 'FileSystemCache', 'CACHE_DIR': '/.flask-cache', "CACHE_DEFAULT_TIMEOUT": 9999999
@@ -24,25 +31,6 @@ cache = Cache(config={
     'CACHE_REDIS_PORT': '6379',
     "CACHE_DEFAULT_TIMEOUT": 9999999,
 })
-
-
-def logging_setup(path):
-    loggingdest = os.path.join(path, "flask.log")
-    print("setting logging to {}".format(loggingdest))
-
-    logFormatter = logging.Formatter(
-        "%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-    # format='%(asctime)s\t%(name)s\t%(funcName)s\t%(levelname)s\t%(message)s'
-    rootLogger = logging.getLogger('mikarezoo-flashcards')
-    rootLogger.setLevel(logging.DEBUG if os.environ.get(
-        "PROD", False) else logging.WARNING)
-
-    fileHandler = logging.FileHandler(loggingdest)
-    fileHandler.setFormatter(logFormatter)
-    rootLogger.addHandler(fileHandler)
-
-
-logging_setup(".")
 
 
 flsk = Blueprint(
@@ -279,6 +267,209 @@ def get_langs():
     ])
 
 
+
+############ user management
+
+def hash_password(p):
+    return bcrypt.generate_password_hash(p).decode("utf-8")
+
+
+
+# @flsk.route('/api/register', methods=['POST'])
+# def register():
+#     # todo registration form
+#     d = structure(request.json, User)
+#     register_user_and_hash_pwd(d)
+#     return "ok", 200
+
+######## user activation
+
+def create_user_activation_link(u, force=False):
+    if force or u.activation_link is None or len(u.activation_link) == 0:
+        link, _ = h.generate_activation_link(f"{u.id}")
+        assert link is not None
+        u.activation_link = link
+        db.update_user(u.id, {'activation_link': link})
+        eventslog.info(f'update user {u.id} activation link')
+
+
+def register_user_and_hash_pwd(u):
+    u.email = u.email.strip()
+    u.password = hash_password(u.password)
+    link, _ = h.generate_activation_link(f"{u.id}")
+    u.activation_link = link
+    db.insert_user(u)
+    return u
+
+
+def mkurl(*path):
+    return os.path.join(environ['WEBSITE_ROOT_URL'], *path)
+
+def send_user_activation(u):
+    create_user_activation_link(u, force=False)
+    print(f"******** {u.activation_link=}")
+    url = mkurl("user/activate", u.activation_link)
+    eventslog.info(f'sending user {u.email} activation link')
+    MailSender.send_email_with_link(u.email, url)
+    
+    
+# def create_user(u: User):
+#     ''' create a user and it's activation link '''
+#     u.email = u.email.strip()
+#     id = db.insert_user(u)
+#     create_user_activation_link(u)
+#     eventslog.info(f'user {u.email} created: {id}, activation link: u.activation_link')
+
+
+@flsk.route('/register', methods=['POST'])
+def register():
+    try:
+        u = register_user_and_hash_pwd(conv.structure(request.json, User))
+        send_user_activation(u)
+    except UserAlreadyExists:
+        return "this user already exists!", 500
+    return "ok", 200
+
+
+def get_user_infos(current_user):
+    return {k: v for k, v in current_user.toDict().items() if k != 'password'}
+
+
+@flsk.route('/user/activate/<linkid>', methods=['POST'])
+def activate_user(linkid):
+    u = db.get_user(filtr={'activation_link': linkid})
+    eventslog.info('activating user {u.email}')
+    if u is None:
+        return "invalid activation link", 400
+    else:
+        db.update_user(u.id, {
+            "active": True,
+            "activation_link": "",
+        })
+        eventslog.info(f'user {u.id} activated')
+        return "ok", 200
+
+
+@flsk.route('/api/user/reset-password/<linkid>', methods=['POST'])
+def reset_user_password(linkid):
+    u = db.get_user(filtr={'activation_link': linkid})
+    eventslog.info('resetting user password {u.email}')
+    if u is None:
+        return "invalid activation link", 400
+    else:
+        db.update_user(u.id, {
+            "activation_link": "",
+            "password": hash_password(request.json['password'])
+        })
+        eventslog.info(f'user {u.password} password reset')
+        return "ok", 200
+
+
+@flsk.route('/api/mail-from-activation-link', methods=['GET'])
+def get_mail_from_link():
+    u = db.get_user(filtr={'activation_link': request.args['link']})
+    return jsonify(u.mail)
+
+
+@flsk.route('/api/reset-password-send-link', methods=['GET'])
+def reset_password():
+    try:
+        print("reset password")
+        print(request.args)
+        u = db.get_user(email=request.args['email'])
+        print(u)
+        assert u is not None and u.active, f"password reset failed: {request.args}"
+        create_user_activation_link(u, force=True)
+        
+        url = mkurl("/user/reset-password", u.activation_link)
+        eventslog.info(f'resetting user {u.email} password: sending email, activation link: {url}')
+        MailSender.send_email_with_link(
+            u.email,
+            url,
+            reason="reset your password"
+        )
+    except Exception as e:
+        traceback.print_exc()
+        logging.getLogger('errors').error(f"{e}")
+    return "ok", 200
+
+
+
+#### end of activation
+
+
+
+
+
+@flsk.route('/login-check', methods=['GET'])
+def login_check():
+    u = None
+    print("LOGIN CHECK")
+    print(current_user)
+    if current_user.is_authenticated:
+        logging.info(f'already authenticated as {current_user}')
+        ans = dict(
+            email=current_user.email,
+            admin=current_user.is_admin(),
+        )
+        print('********', ans)
+        return jsonify(ans)
+    else:
+        return jsonify({})
+
+
+@flsk.route('/login', methods=['POST'])
+def login():
+    u = None
+    j = request.json
+    userDb = db.get_user(email=j["email"])
+    if userDb is not None:
+        print(userDb, j["password"])
+        password_ok = bcrypt.check_password_hash(
+            userDb.password, j["password"])
+        if password_ok:
+            print("LOGIN OK", userDb.email)
+            userDb.authenticated = True
+            login_user(userDb, remember=True)
+            print(f'**************************** {userDb.id} logged in')
+            
+            return jsonify(
+                dict(
+                    email=current_user.email,
+                    admin=current_user.is_admin(),
+                )), 200
+        
+    
+    eventslog.info(f'{j["email"]} failed to log in (wrong username/password)')
+    return "Invalid credentials", 401
+
+
+@flsk.route("/logout", methods=["GET"])
+@login_required
+def logout():
+    eventslog.info(f'{current_user.id} logged out')
+    logout_user()
+    return jsonify("ok")
+
+
+
+
+################# end of user management
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @flsk.route('/', defaults={'path': ''})
 @flsk.route('/<path:path>')
 def index(path):
@@ -290,14 +481,22 @@ static_url_path = os.path.join(root_url, "static")
 app = Flask(__name__, static_url_path=static_url_path)
 app.register_blueprint(flsk, url_prefix=root_url)
 cache.init_app(app)
+app.secret_key = environ['FLASK_SECRET_KEY']
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+bcrypt = Bcrypt(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.get_user(user_id)
 
 
-db.connect()
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     app.run(host="0.0.0.0", debug=True)
 else:
-    gunicorn_logger = logging.getLogger('gunicorn.error')
-    app.logger.handlers = gunicorn_logger.handlers
+    # gunicorn_logger = logging.getLogger('gunicorn.error')
+    # app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(logging.DEBUG)
-    logging = app.logger
+    # logging = app.logger

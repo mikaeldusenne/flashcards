@@ -26,4 +26,6 @@ numpy
 attrs
 mypy
 cattrs
+boto3
+markdown
 
