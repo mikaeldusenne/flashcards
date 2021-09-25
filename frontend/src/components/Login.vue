@@ -179,7 +179,11 @@ export default class Login extends Vue {
     }
   }
 
-  tryLogin() {
+  loginOrRegister(){
+    if(this.showRegister){this.register()}else{this.login()}
+  }
+  
+  login() {
     this.infomsg = ""
 
     return axios
@@ -188,24 +192,14 @@ export default class Login extends Vue {
       this.loggedin = true;
       console.log((resp as any).id);
       const u = resp.data;
+      this.$router.go(0)
+
     })
     .catch(e => {
       this.$emit("err", e.response.data);
       this.loggedin = false;
       this.infomsg = e.response.data;
     });
-  }
-  
-  loginOrRegister(){
-    if(this.showRegister){this.register()}else{this.login()}
-  }
-  
-  login() {
-    this.tryLogin()
-    .then(() => {
-      this.$router.go(0)
-    })
-    .catch(console.log);
   }
   
   register() {

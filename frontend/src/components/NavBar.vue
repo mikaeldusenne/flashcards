@@ -11,7 +11,7 @@
         </li>
       </ul>
       <ul class="navbar-nav mb-2 mb-lg-0" id="navright">
-        <li class="nav-item">
+        <li class="nav-item" v-if="showLogin && getLoggedIn">
           <a class="nav-link" v-on:click="logout()" href="#"> Logout </a>
         </li>
         <!-- <span class="navbar-text" style="margin-right: 0.5rem;">
