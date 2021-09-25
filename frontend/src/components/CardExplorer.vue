@@ -60,6 +60,8 @@
       </div>
       <b-row v-show="!editing">
         <b-pagination
+          :disabled="!getLoggedIn"
+          v-b-tooltip.hover :title="getLoggedIn?'':'Please login to access all features.'"
           class="pagination"
           style="display: flex; justify-content: center"
           v-model="currentPage"
@@ -79,7 +81,7 @@
           style="margin-bottom: 0.5rem"
         >
           <div class="card">
-            <CardViewer :card="c" @deleted="fetchCards"  @editing="toggleEditing"/>
+            <CardViewer :editable="getLoggedIn" :card="c" @deleted="fetchCards"  @editing="toggleEditing"/>
           </div>
         </div>
         
@@ -98,6 +100,7 @@ import CardEditor from "@/components/CardEditor.vue";
 import CardViewer from "@/components/CardViewer.vue";
 
 import _ from "lodash";
+import { mapGetters } from "vuex";
 
 @Component({
   components: {
@@ -105,6 +108,7 @@ import _ from "lodash";
     CardViewer,
   },
   mixins: [MathMixin],
+  computed: mapGetters(["getLoggedIn"]),
 })
 export default class Home extends Mixins(MathMixin) {
   total_cards = 0;
@@ -112,12 +116,15 @@ export default class Home extends Mixins(MathMixin) {
   deck: string | null = null;
   perPage = 28;
   currentPage = 1;
+  
+  getLoggedIn!: boolean;
 
   editing: string | null = null;
 
   searchCard = "";
 
   toggleEditing(cardId, b){
+    
     console.log("TOGGLE EDITING")
     console.log(cardId)
     console.log(b)

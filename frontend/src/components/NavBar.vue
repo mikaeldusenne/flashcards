@@ -14,9 +14,9 @@
         <li class="nav-item" v-if="showLogin && getLoggedIn">
           <a class="nav-link" v-on:click="logout()" href="#"> Logout </a>
         </li>
-        <!-- <span class="navbar-text" style="margin-right: 0.5rem;">
-             {{ getUser.email }}
-             </span> -->
+        <li class="nav-item" v-if="showLogin && !getLoggedIn">
+          <a class="nav-link" href="/login"> Login </a>
+        </li>
         
       </ul>
     </div>

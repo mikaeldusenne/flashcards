@@ -4,10 +4,7 @@
     <b-row style="text-align: center; margin-top: 1rem"
       ><h1>{{ title }} Flashcards</h1></b-row
     >
-    <div id="content" v-if="getUser.email">
-      <router-view />
-    </div>
-    <div v-else style="margin-top: 2rem;">
+    <div v-if="false && !getLoggedIn" style="margin-top: 2rem;">
       <b-container fluid>
         <b-row class="d-flex justify-content-center">
           <b-col xs="12" sm="10" xl="4" lg="6">
@@ -15,6 +12,9 @@
           </b-col>
         </b-row>
       </b-container>
+    </div>
+    <div v-else id="content">
+      <router-view />
     </div>
     
   </div>
@@ -31,14 +31,14 @@ import { mapGetters } from "vuex";
 
 
 @Component({
-  computed: mapGetters(["getUser"]),
+  computed: mapGetters(["getLoggedIn"]),
   components: {
     NavBar,
     Login,
   },
 })
 export default class App extends Vue {
-  getUser!: any;
+  getLoggedIn!: boolean;
   
   get title() {
     return Math.random() > 0.5 ? "میکارزو" : "Mikarezoo";

@@ -335,13 +335,15 @@ def get_user_infos(current_user):
     return {k: v for k, v in current_user.toDict().items() if k != 'password'}
 
 
-@flsk.route('/user/activate/<linkid>', methods=['POST'])
+@flsk.route('/api/user/activate/<linkid>', methods=['POST'])
 def activate_user(linkid):
     u = db.get_user(filtr={'activation_link': linkid})
-    eventslog.info('activating user {u.email}')
+    print(f'activating user {linkid} for {u.email if u else None}')
     if u is None:
+        print('invalid')
         return "invalid activation link", 400
     else:
+        print(f'activation success')
         db.update_user(u.id, {
             "active": True,
             "activation_link": "",
@@ -424,7 +426,9 @@ def login():
     j = request.json
     userDb = db.get_user(email=j["email"])
     if userDb is not None:
-        print(userDb, j["password"])
+        if not userDb.active:
+            return "Please confirm your email", 401
+        
         password_ok = bcrypt.check_password_hash(
             userDb.password, j["password"])
         if password_ok:

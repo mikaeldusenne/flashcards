@@ -1,5 +1,5 @@
 <template>
-  <div class="card card-viewer">
+  <div class="card card-viewer" @keyup.esc="toggleEditing(false)">
     <div class="card-body" style="text-align: center; padding: 0.5rem">
       <div
         class="card-viewer-title"
@@ -32,7 +32,10 @@
       </div>
       <!-- <div><strong>created: </strong>{{new Date(card.created).toLocaleDateString()}} {{new Date(card.created).toLocaleTimeString()}}</div>
            <div><strong>modified: </strong>{{new Date(card.modified).toLocaleDateString()}} {{new Date(card.modified).toLocaleTimeString()}}</div> -->
-      <div v-if="editable && editing">
+      <div
+        v-if="editable && editing"
+        
+      >
         <CardEditor
           :card="card"
           @saved="toggleEditing(false)"
@@ -50,12 +53,18 @@ import MathMixin from "@/MathMixin";
 import { Card } from "@/types";
 
 import CardEditor from "@/components/CardEditor.vue";
+import { mapGetters } from "vuex";
 
 @Component({
   components: { CardEditor },
   mixins: [MathMixin],
+  computed: mapGetters(["getLoggedIn", "getUser", "isAdmin"]),
 })
 export default class CardViewer extends Mixins(MathMixin) {
+  getLoggedIn!: boolean;
+  isAdmin!: boolean;
+  getUser!: any;
+  
   editing = false;
   
   @Prop()
@@ -81,11 +90,12 @@ export default class CardViewer extends Mixins(MathMixin) {
   }
 
   toggleEditing(v){
-    
-    this.editing = v==undefined ? !this.editing : v
-    console.log("CARDVIEWER EDITING IS NOW:")
-    console.log(this.editing)
-    this.$emit('editing', this.card.id, this.editing)
+    if(this.editable){
+      this.editing = v==undefined ? !this.editing : v
+      console.log("CARDVIEWER EDITING IS NOW:")
+      console.log(this.editing)
+      this.$emit('editing', this.card.id, this.editing)
+    }
   }
   
 }

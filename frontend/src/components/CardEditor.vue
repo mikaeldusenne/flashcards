@@ -58,10 +58,19 @@
       <div style="display: flex; justify-content: center; margin: 0 0.5rem">
         <button
           @click="saveCard"
-          class="btn btn-outline-secondary"
+          class="btn btn-outline-primary"
           type="button"
         >
           {{ textButton }}
+        </button>
+      </div>
+      <div style="display: flex; justify-content: center; margin: 0 0.5rem">
+        <button
+          @click="$emit('saved')"
+          class="btn btn-outline-secondary"
+          type="button"
+        >
+          Cancel
         </button>
       </div>
       <div

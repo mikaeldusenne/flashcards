@@ -1,6 +1,8 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
+import Login from "../components/Login.vue";
+import Activate from "../components/Activate.vue";
 import Train from "../views/Train.vue";
 
 Vue.use(VueRouter);
@@ -15,6 +17,16 @@ const routes: Array<RouteConfig> = [
     path: "/train",
     name: "Train",
     component: Train,
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login,
+  },
+  {
+    path: "/user/activate/:activationLink",
+    name: "Activate",
+    component: Activate,
   },
 ];
 

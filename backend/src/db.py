@@ -200,8 +200,11 @@ def get_users(filtr={}):
     return list([V.decode(e) for e in userlist])
 
 
-def update_user(userId, d : dict):
-    db.users.update_one({'_id': userId}, {'$set': d})
+def update_user(id, d : dict):
+    if type(id) == str:
+        id = ObjectId(id)
+
+    db.users.update_one({'_id': id}, {'$set': d})
 
 
 def insert_user(u):
@@ -227,12 +230,11 @@ def get_user(id=None, email=None, filtr={}):
 
 
 def delete_user(id):
+    if type(id) == str:
+        id = ObjectId(id)
     print('db deleting', id)
     ans = db.users.delete_one({'_id': id})
     print(ans)
-
-
-
 
 
 def create_indexes():

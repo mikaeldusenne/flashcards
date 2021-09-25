@@ -44,5 +44,6 @@ export default new Vuex.Store({
     getDecks: (state) => state.decks,
     getUser: (state) => state.user,
     getLoggedIn: (state) => state.user.email != null,
+    isAdmin: (state) => state.user.admin == true,
   },
 });

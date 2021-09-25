@@ -1,5 +1,6 @@
 <template>
   <div class="container-fluid">
+    {{getUser}}
     <div class="row justify-content-md-center" style="margin: 1rem">
       <b-col sm="12" md="10" lg="10" xl="8">
         <b-tabs content-class="mt-3" lazy>
@@ -7,10 +8,10 @@
             <CardExplorer />
           </b-tab>
           <b-tab title="Create">
-            <CardCreator />
+            <LoginMessage><CardCreator/></LoginMessage>
           </b-tab>
           <b-tab title="Import from csv">
-            <CardUploader />
+            <LoginMessage><CardUploader /></LoginMessage>
           </b-tab>
         </b-tabs>
       </b-col>
@@ -27,7 +28,9 @@ import CardCreator from "@/components/CardCreator.vue";
 import CardUploader from "@/components/CardUploader.vue";
 import CardExplorer from "@/components/CardExplorer.vue";
 import CardViewer from "@/components/CardViewer.vue";
+import LoginMessage from "@/components/LoginMessage.vue";
 axios.defaults.baseURL = "/mikarezoo-flashcards";
+import { mapGetters } from "vuex";
 
 @Component({
   components: {
@@ -36,9 +39,15 @@ axios.defaults.baseURL = "/mikarezoo-flashcards";
     CardUploader,
     CardExplorer,
     CardCreator,
+    LoginMessage,
   },
+  computed: mapGetters(["getLoggedIn", "getUser"]),
+
 })
-export default class Home extends Vue {}
+export default class Home extends Vue {
+  getLoggedIn!: boolean;
+  getUser!: any;
+}
 </script>
 
 <style>
