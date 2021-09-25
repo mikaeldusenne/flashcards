@@ -6,14 +6,14 @@
         style="margin: 1rem"
         v-if="!training"
       >
-        <div class="col col-xl-4 col-lg-6 col-sm8 col-xs-12">
+        <div class="col-xl-6 col-lg-8 col-sm-12 col-xs-12">
           <div class="card">
             <div class="card-body" style="margin-top: 0.5rem">
               <div class="row mb-2 list-item-form">
-                <label for="lang-match-search" class="col-sm-2 col-form-label"
+                <label for="lang-match-search" class="col-sm-3 col-form-label"
                 >User</label
                      >
-                <div class="col-sm-10">
+                <div class="col-sm-9">
                   <b-form-select
                     id="lang-match-search"
                     v-model="user"
@@ -25,10 +25,10 @@
               </div>
 
               <div class="row mb-3 list-item-form">
-                <label for="lang-match-search" class="col-sm-2 col-form-label"
+                <label for="lang-match-search" class="col-sm-3 col-form-label"
                 >Deck</label
                      >
-                <div class="col-sm-10">
+                <div class="col-sm-9">
                   <b-form-select
                     v-model="deck"
                     :options="deckOpts"
@@ -39,10 +39,10 @@
               </div>
 
               <div class="row mb-2 list-item-form">
-                <label for="lang-match-search" class="col-sm-2 col-form-label"
+                <label for="lang-match-search" class="col-sm-3 col-form-label"
                 >Language</label
                          >
-                <div class="col-sm-10">
+                <div class="col-sm-9">
                   <b-form-select
                     id="lang-match-search"
                     v-model="showLang"
@@ -108,6 +108,7 @@
                  justify-content: center;
                  margin: 0 0.5rem;
                  margin-bottom: 0.5rem;
+width: 100%;
                  "
           v-if="showResult"
         >

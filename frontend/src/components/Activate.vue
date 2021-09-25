@@ -30,9 +30,9 @@ export default class Activate extends Vue {
     .post("/api/user/activate/" + this.$route.params.activationLink)
     .then(resp => {
       this.infomsg="You successfully activated your account.<br>You will be redirected shortly...";
-      // setTimeout(() => {
-      //   this.$router.push('/');
-      // }, 2500)
+      setTimeout(() => {
+        this.$router.push('/');
+      }, 2500)
     })
     .catch(e => {
       this.$emit("err", e.response.data);
@@ -41,8 +41,6 @@ export default class Activate extends Vue {
   }
 
   mounted(){
-    console.log("-----------------------------------")
-    console.log(this.$route)
     this.login()
   }
 }

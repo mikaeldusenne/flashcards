@@ -40,32 +40,33 @@
         </div>
       </div>
 
-      <div v-for="(e, i) in decks" :key="i">
-        <div class="row mb-2">
-          <div class="input-group">
-            <input
-              type="text"
-              maxlength="75"
-              class="form-control"
-              v-model="e.title"
-            />
-            <button
-              class="btn btn-outline-secondary"
-              type="button"
-              @click="addDeck(e)"
-            >
-              Save
-            </button>
-            <button
-              class="btn btn-outline-danger"
-              type="button"
-              @click="deleteDeck(e)"
-            >
-              Delete
-            </button>
-          </div>
+      <b-row style="margin: 1rem 0;">
+        
+        <div class="col-12" v-for="(e, i) in decks" :key="i">
+            <div class="input-group">
+              <input
+                type="text"
+                maxlength="75"
+                class="form-control"
+                v-model="e.title"
+              />
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                @click="addDeck(e)"
+              >
+                Save
+              </button>
+              <button
+                class="btn btn-outline-danger"
+                type="button"
+                @click="deleteDeck(e)"
+              >
+                Delete
+              </button>
+            </div>
         </div>
-      </div>
+      </b-row>
     </div>
   </div>
 </template>

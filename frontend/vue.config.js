@@ -7,5 +7,5 @@ module.exports = {
   devServer: {
     proxy: "http://mikarezoo-flashcards_app:5000",
   },
-  lintOnSave: true,
+    lintOnSave: true,
 };

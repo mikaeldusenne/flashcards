@@ -1,19 +1,28 @@
 <template>
-  <div class="container-fluid">
-    <div class="row justify-content-md-center" style="margin: 1rem">
-      <b-col sm="12" md="10" lg="10" xl="8">
-        <b-tabs content-class="mt-3" lazy>
-          <b-tab title="Explore">
-            <CardExplorer />
-          </b-tab>
-          <b-tab title="Create">
-            <LoginMessage><CardCreator/></LoginMessage>
-          </b-tab>
-          <b-tab title="Import from csv">
-            <LoginMessage><CardUploader /></LoginMessage>
-          </b-tab>
-        </b-tabs>
-      </b-col>
+  <div class="container" style="max-width: 80%;">
+    <div class="row" style="margin: 10rem 0; display: flex; justify-content: space-between;">
+      <div class="col-md-6 col-xs-12">
+          <b-row style="display: fluid; justify-content: center;" class="mr-4">
+            <img src="/azadi_eiffel_tower.png" style="max-height: 10rem;">
+          </b-row>
+          <h1 style="font-weight: 600; font-size: 6rem; text-align: center;" class="mr-4">
+              French with {{ title }}
+            </h1>
+      </div>
+      <div class="col-md-6 col-xs-12" style="display: flex; align-items: center;">
+        <b-container fluid class="ml-4">
+          
+          <b-row>
+            <p style="font-size: 1.4rem;">Learn French with native speakers in both Farsi and French, working together to offer you polished content adapted to all levels.</p>
+          </b-row>
+          <b-row style="justify-content: center; margin-top: 2rem;">
+            <button class="btn btn-outline-primary" style="font-size: 2rem;" @click="$router.push('explore')">Get Started</button>
+          </b-row>
+          
+        </b-container>
+        
+      </div>
+      
     </div>
   </div>
 </template>
@@ -46,6 +55,11 @@ import { mapGetters } from "vuex";
 export default class Home extends Vue {
   getLoggedIn!: boolean;
   getUser!: any;
+
+  get title() {
+    return Math.random() > 0.5 ? "میکارزو" : "Mikarezoo";
+  }
+
 }
 </script>
 

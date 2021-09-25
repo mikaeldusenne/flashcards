@@ -8,7 +8,7 @@ import Toast from "vue-toastification";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
+import { BootstrapVue } from "bootstrap-vue";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -23,7 +23,7 @@ import "vue-toastification/dist/index.css";
 
 Vue.use(Toast, {});
 Vue.use(BootstrapVue);
-Vue.use(IconsPlugin);
+// Vue.use(IconsPlugin);
 
 library.add(faEdit);
 library.add(faUser);

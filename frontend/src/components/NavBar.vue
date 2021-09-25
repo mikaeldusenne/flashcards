@@ -1,49 +1,33 @@
 <template>
-  <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
-    <a class="navbar-brand" href="/mikarezoo-flashcards"> <b-nav-item to="/">Mikarezoo-flashcards</b-nav-item></a>
-    <button class="navbar-toggler" type="button" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" @click="toggleNavbar">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent" :class="{in: expanded}">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <b-nav-item to="/train">Train</b-nav-item>
-        </li>
-      </ul>
-      <ul class="navbar-nav mb-2 mb-lg-0" id="navright">
-        <li class="nav-item" v-if="showLogin && getLoggedIn">
-          <a class="nav-link" v-on:click="logout()" href="#"> Logout </a>
-        </li>
-        <li class="nav-item" v-if="showLogin && !getLoggedIn">
-          <b-nav-item to="/login">Login</b-nav-item>
-        </li>
-        
-      </ul>
-    </div>
+  <b-navbar toggleable="lg" type="dark" variant="dark">
+    <b-navbar-brand to="/">Mikarezoo-flashcards</b-navbar-brand>
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" v-if="false">
-      >
-      <a class="navbar-brand" href="/mikarezoo-flashcards">
-        mikarezoo-flashcards
-      </a>
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav>
+        <b-nav-item to="/explore">Explore</b-nav-item>
+        <b-nav-item to="/train">Train</b-nav-item>
+      </b-navbar-nav>
 
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+      <!-- Right aligned nav items -->
+      <b-navbar-nav class="ml-auto">
 
-      <b-collapse id="nav-collapse" is-nav>
-        <b-navbar-nav>
-          <!-- <b-nav-item to="/about">About</b-nav-item> -->
-          <b-nav-item to="/train">Train</b-nav-item>
-          
-          <!-- <b-navbar-nav v-if="showLogin && !getLoggedIn" class="ml-auto">
-               <b-nav-item to="/login">Login</b-nav-item>
-               <b-nav-item to="/register">Register</b-nav-item>
-               </b-navbar-nav> -->
-          
-        </b-navbar-nav>
-      </b-collapse>
-    </nav>
-  </nav>
-  
+        <b-nav-item-dropdown text="Lang" right>
+          <b-dropdown-item href="#">Français</b-dropdown-item>
+          <b-dropdown-item href="#">فارسی</b-dropdown-item>
+        </b-nav-item-dropdown>
+
+        <b-nav-item-dropdown right v-if="showLogin && getLoggedIn">
+          <template #button-content>
+            <em>{{getUser.email}}</em>
+          </template>
+          <b-dropdown-item href="#">Profile</b-dropdown-item>
+          <b-dropdown-item href="#" @click="logout">Logout</b-dropdown-item>
+        </b-nav-item-dropdown>
+        <b-nav-item to="/login" v-else>Login</b-nav-item>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
 </template>
 
 <script lang="ts">

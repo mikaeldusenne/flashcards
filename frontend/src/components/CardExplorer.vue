@@ -1,6 +1,6 @@
 <template>
   <div class="row card border-dark" style="margin-bottom: 1rem">
-    <div class="card-header">
+    <div class="card-header" style="padding-bottom: 0;">
       <div><strong>Card Explorer</strong></div>
 
       <div
@@ -58,19 +58,22 @@
           </button>
         </div>
       </div>
-      <b-row v-show="!editing">
+      <b-row
+        v-show="!editing"
+        style="display: flex; justify-content: center; margin-bottom: 0;"
+      >
         <b-pagination
           :disabled="!getLoggedIn"
           v-b-tooltip.hover :title="getLoggedIn?'':'Please login to access all features.'"
           class="pagination"
-          style="display: flex; justify-content: center"
           v-model="currentPage"
+          style="margin-bottom: 0;"
           :total-rows="total_cards"
           :per-page="perPage"
         ></b-pagination>
       </b-row>
     </div>
-    <div class="card-body">
+    <div class="card-body" style="margin-top: 0;">
       <transition-group name="listtr" tag="div" class="row" >
 
         <div

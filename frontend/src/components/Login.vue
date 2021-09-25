@@ -5,9 +5,9 @@
         
         <div v-if="!showReset">
           <b-row style="margin-bottom: 1rem;">
-            <div class="alert alert-info" v-if="infomsg" style="max-height: 5rem; overflow: auto;">{{ infomsg }}</div>
+            <div class="alert alert-info" v-if="infomsg" style="max-height: 10rem; overflow: auto; width: 100%; text-align: center;">{{ infomsg }}</div>
           </b-row>
-          <form class="row g-3" v-on:submit.prevent>
+          <form id="form" class="row g-3" v-on:submit.prevent>
             <div class="col-12" @keyup.enter="loginOrRegister">
               <label for="inputEmail">Email</label>
               <input
@@ -38,6 +38,7 @@
                 placeholder=""
               />
             </div>
+            <div class="col-12" style="margin-bottom: 1rem;"></div>
             <div class="col-xs-12" :class="{'col-xl-6': !showRegister}">
               <button
                 type="button"
@@ -59,9 +60,8 @@
                 Forgot your password?
               </button>
             </div>
-            <!-- <hr style="margin-top: 2rem; margin-bottom: 0;" /> -->
             
-            <div v-if="!showRegister" class="col-12" style="justify-content: center; text-align: center; margin: 1rem 0 0rem 0;">
+            <div v-if="!showRegister" class="col-12" style="justify-content: center; text-align: center;">
               or
             </div>
             <!-- <div class="col-xl-12 col-xs-12">
@@ -235,4 +235,8 @@ export default class Login extends Vue {
 }
 </script>
 
-<style></style>
+<style>
+form#form > div{
+  margin-bottom: 0.75rem;
+}
+</style>

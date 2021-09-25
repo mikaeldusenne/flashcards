@@ -370,7 +370,11 @@ def reset_user_password(linkid):
 @flsk.route('/api/mail-from-activation-link', methods=['GET'])
 def get_mail_from_link():
     u = db.get_user(filtr={'activation_link': request.args['link']})
-    return jsonify(u.mail)
+    return "test@mail.com"
+    if u is None:
+        return "invalid activation link", 404
+    else:
+        return jsonify(u.mail)
 
 
 @flsk.route('/api/reset-password-send-link', methods=['GET'])
@@ -383,7 +387,7 @@ def reset_password():
         assert u is not None and u.active, f"password reset failed: {request.args}"
         create_user_activation_link(u, force=True)
         
-        url = mkurl("/user/reset-password", u.activation_link)
+        url = mkurl("user/reset-password", u.activation_link)
         eventslog.info(f'resetting user {u.email} password: sending email, activation link: {url}')
         MailSender.send_email_with_link(
             u.email,

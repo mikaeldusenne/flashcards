@@ -1,9 +1,6 @@
 <template>
   <div id="app">
     <NavBar />
-    <b-row style="text-align: center; margin-top: 1rem"
-      ><h1>{{ title }} Flashcards</h1></b-row
-    >
     <div v-if="false && !getLoggedIn" style="margin-top: 2rem;">
       <b-container fluid>
         <b-row class="d-flex justify-content-center">
@@ -40,9 +37,6 @@ import { mapGetters } from "vuex";
 export default class App extends Vue {
   getLoggedIn!: boolean;
   
-  get title() {
-    return Math.random() > 0.5 ? "میکارزو" : "Mikarezoo";
-  }
   mounted() {
     axios
     .get("/login-check", {})
