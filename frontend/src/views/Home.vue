@@ -3,7 +3,7 @@
     <div class="row" style="margin: 10rem 0; display: flex; justify-content: space-between;">
       <div class="col-md-6 col-xs-12">
           <b-row style="display: fluid; justify-content: center;" class="mr-4">
-            <img src="/azadi_eiffel_tower.png" style="max-height: 10rem;">
+            <img src="./azadi_eiffel_tower.png" style="max-height: 10rem;">
           </b-row>
           <h1 style="font-weight: 600; font-size: 6rem; text-align: center;" class="mr-4">
               French with {{ title }}
