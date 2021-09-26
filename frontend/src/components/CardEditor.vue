@@ -3,26 +3,49 @@
   <div class="container-fluid form" v-on:submit.prevent>
     <div class="row mb-3 list-item-form">
       <label for="lang-match-search" class="col-sm-2 col-form-label"
-        >Deck</label
-      >
+      >Deck</label
+           >
       <div class="col-sm-10">
-        <b-form-select
-          multiple
-          id="lang-match-search"
-          v-model="card.decks"
-          :options="deckOpts"
-          class="form-control form-control"
-        />
+        <DeckSelector v-model="card.decks" />
+      </div>
+    </div>
+    <div class="row mb-3 list-item-form">
+      <label for="lang-match-search" class="col-sm-2 col-form-label"
+      >Difficulty</label
+                 >
+      <div class="col-sm-10">
+        <b-form-rating v-model="card.difficulty"
+                       icon-empty="journal"
+                       icon-half="journal-minus"
+                       icon-full="journal-text"
+                       variant="dark"
+                       stars="5"
+                       show-value precision="1"></b-form-rating>
+      </div>
+    </div>
+    <div class="row mb-3 list-item-form">
+      <label for="lang-match-search" class="col-sm-2 col-form-label"
+      >Importance</label
+                 >
+      <div class="col-sm-10">
+        <b-form-rating v-model="card.importance"
+                       icon-empty="chat"
+                       icon-half="chat-text"
+                       icon-full="chat-text-fill"
+                       variant="success"
+                       stars="5"
+                       show-value precision="1"></b-form-rating>
       </div>
     </div>
 
     <div v-for="l in card.langs" :key="l.id">
+      <hr v-if="showAdvanced" />
       <div class="row mb-3">
         <label
           :for="'searchform-' + l.lang"
           style=""
           class="col-sm-4 col-xl-3 col-form-label"
-          >{{ prettyLang(l.lang) }}</label
+        ><strong>{{ prettyLang(l.lang) }}</strong></label
         >
         <div class="col-sm-8 col-xl-9">
           <input
@@ -40,7 +63,7 @@
           :for="'commentform-' + l.lang"
           style=""
           class="col-sm-4 col-xl-3 col-form-label"
-          >comment ({{ prettyLang(l.lang) }})</label
+          >comment</label
         >
         <div class="col-sm-8 col-xl-9">
           <textarea
@@ -52,7 +75,6 @@
           />
         </div>
       </div>
-      <hr v-if="showAdvanced" />
     </div>
     <div class="" style="display: flex; justify-content: center">
       <div style="display: flex; justify-content: center; margin: 0 0.5rem">
@@ -103,8 +125,13 @@ import MathMixin from "@/MathMixin";
 
 import axios from "axios";
 import { Card } from "@/types";
+import DeckSelector from "@/components/deckSelector.vue";
+
 
 @Component({
+  components: {
+    DeckSelector
+  },
   mixins: [MathMixin],
 })
 export default class CardEditor extends Mixins(MathMixin) {
@@ -121,6 +148,7 @@ export default class CardEditor extends Mixins(MathMixin) {
   showAdvancedDefault!: boolean;
   
   showAdvanced = false;
+  deckFilter = "";
   
   @Watch("showAdvancedDefault")
   advchgd(v){

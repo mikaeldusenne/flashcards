@@ -70,12 +70,18 @@ def get_cards():
         cards = cards.limit(int(request.args["first"]))
     
     # logging.exception("exception log")
+    print(total_n, "cards.")
     return jsonify(dict(n=total_n, cards=[V.decode(e).toDict() for e in cards]))
 
 
 @flsk.route("/api/update-usercard", methods=["POST"])
+# @login_required
 def update_usercard():
-    user = request.json['user']
+    if current_user.is_anonymous():
+        return jsonify({})
+    
+    # user = request.json['user']
+    user = current_user.id
     card = ObjectId(request.json['card'])
     difficulty = request.json['difficulty']
     print("update user card", request.json)
@@ -106,20 +112,16 @@ def update_usercard():
             {'user': user, "card": card_id},
             {"$set": {"bucket": new_bucket, "reviewed": reviewed}}
         )
-    # print("CARD", card)
     
     print(f"Update Bucket {bucket} -> {new_bucket}: {describe_card(card)}")
     return jsonify(dict(bucket=new_bucket))
 
+
 def describe_card(card_id):
     return " / ".join([e['text'] for e in db.db.cards.find_one({'_id': ObjectId(str(card_id))})['langs']])
 
-def _train_cards(user, deck=None):
-    # db.db.usercards.find({user: user}, {'_id': 0})
-    # from bson import ObjectId
-    # db.db.usercards.find_one({'user': 'mika', "card": ObjectId('6147176f65625f5c941084dd')})
 
-    # user = "mika"
+def _train_cards(user, deck=None):
     usercards = list(db.db.usercards.aggregate([
         {'$match': {"user": user}},
         {"$lookup": {
@@ -132,8 +134,6 @@ def _train_cards(user, deck=None):
         {'$project': {"_id": 0}},
     ]))
     
-    # usercards
-    
     def prepare_user_card(e):
         e["card"] = V.decode(e['card']).toDict()
         return e
@@ -145,7 +145,6 @@ def _train_cards(user, deck=None):
     }
     
     # usercards
-    # cards = {c.id: c for c in db.get_cards()}
     matchd = {}
     if deck is not None:
         matchd["decks"] = {'$elemMatch': {"$eq": deck}}
@@ -169,14 +168,18 @@ def _train_cards(user, deck=None):
     
 
 @flsk.route("/api/train-cards", methods=["GET"])
+@login_required
 def train_cards():
-    user = request.args['user']
-    return jsonify(_train_cards(user, request.args.get('deck')))
+    # user = request.args['user']
+    user = current_user
+    return jsonify(_train_cards(user.id, request.args.get('deck')))
     
 
 @flsk.route("/api/train-card", methods=["GET"])
+@login_required
 def train_card():
-    user = request.args['user']
+    # user = request.args['user']
+    user = current_user.id
     deck = request.args.get('deck')
     current = request.args.get('current')
     print("selecting a random card", user, deck)
@@ -216,6 +219,7 @@ def decks():
     
     
 @flsk.route("/api/add-card", methods=["POST"])
+@login_required
 def add_card():
     is_new = request.json.get('isNew', False)
     c = conv.structure(request.json['card'], Card)
@@ -223,22 +227,32 @@ def add_card():
     # logging.exception("exception log")
     if is_new:
         try:
+            c.creator = current_user.id
             db.add_card(c)
         except:
             already = db.find_similar_card(c)
             return jsonify(dict(card=already.toDict())), 400
     else:
+        if not (current_user.is_admin() or current_user.id == c.creator):
+            return "unauthorized", 401
         db.update_card(c)
     return "ok", 200
 
+
 @flsk.route("/api/delete-card", methods=["POST"])
+@login_required
 def delete_card():
     c = conv.structure(request.json, Card).toBsonDict()
+    
+    if not (current_user.is_admin() or current_user.id == c.creator):
+        return "unauthorized", 401
+    
     print('DELETE CARD', c)
     # logging.exception("exception log")
     assert c["_id"] is not None and len(str(c["_id"]))
     db.db.cards.delete_one({"_id": c["_id"]})
     return "ok", 200
+
 
 @flsk.route('/api/upload', methods=['POST'])
 def engine():

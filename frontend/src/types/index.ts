@@ -8,5 +8,10 @@ export interface CardLang {
 export interface Card {
   langs: CardLang[];
   decks: string[];
-  id: string;
+    id: string;
+    creator: string;
+    difficulty: number;
+    importance: number;
+    created: Date;
+    modified: Date;
 }

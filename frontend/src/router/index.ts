@@ -6,6 +6,7 @@ import Activate from "../components/Activate.vue";
 import ResetPassword from "../components/ResetPassword.vue";
 import Train from "../views/Train.vue";
 import Explore from "../views/Explore.vue";
+import Manage from "../views/Manage.vue";
 
 Vue.use(VueRouter);
 
@@ -19,6 +20,11 @@ const routes: Array<RouteConfig> = [
     path: "/train",
     name: "Train",
     component: Train,
+  },
+  {
+    path: "/manage",
+    name: "Manage",
+    component: Manage,
   },
   {
     path: "/explore",

@@ -62,9 +62,10 @@
         v-show="!editing"
         style="display: flex; justify-content: center; margin-bottom: 0;"
       >
+        <!-- :disabled="!getLoggedIn"
+             v-b-tooltip.hover :title="getLoggedIn?'':'Please login to access all features.'" -->
+
         <b-pagination
-          :disabled="!getLoggedIn"
-          v-b-tooltip.hover :title="getLoggedIn?'':'Please login to access all features.'"
           class="pagination"
           v-model="currentPage"
           style="margin-bottom: 0;"
@@ -74,8 +75,8 @@
       </b-row>
     </div>
     <div class="card-body" style="margin-top: 0;">
-      <transition-group name="listtr" tag="div" class="row" >
-
+      <!-- <transition-group name="listtr" tag="div" class="row" > -->
+      <div class="row">
         <div
           class="listtr-item"
           :class="{'col-sm-6': !editing, 'col-md-4': !editing, 'col-lg-4': !editing, 'col-xl-3': !editing, 'col-md-12': editing}"
@@ -87,8 +88,8 @@
             <CardViewer :editable="getLoggedIn" :card="c" @deleted="fetchCards"  @editing="toggleEditing"/>
           </div>
         </div>
-        
-      </transition-group>
+      </div>
+      <!-- </transition-group> -->
     </div>
   </div>
 </template>

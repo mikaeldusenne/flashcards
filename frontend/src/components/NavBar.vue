@@ -7,6 +7,7 @@
       <b-navbar-nav>
         <b-nav-item to="/explore">Explore</b-nav-item>
         <b-nav-item to="/train">Train</b-nav-item>
+        <b-nav-item to="/manage" v-if="getUser.admin">Manage</b-nav-item>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->

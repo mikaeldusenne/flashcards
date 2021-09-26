@@ -2,11 +2,18 @@
   <div class="container-fluid">
     <div class="row justify-content-md-center" style="margin: 1rem">
       <b-col sm="12" md="10" lg="10" xl="8">
-        <DeckExplorer />
+        <b-tabs content-class="mt-3" lazy>
+          <b-tab title="Explore">
+            <CardExplorer />
+          </b-tab>
+          <b-tab title="Create">
+            <LoginMessage><CardCreator/></LoginMessage>
+          </b-tab>
+          <b-tab title="Import from csv">
+            <LoginMessage><CardUploader /></LoginMessage>
+          </b-tab>
+        </b-tabs>
       </b-col>
-      <!-- <b-col sm="12" md="10" lg="10" xl="8">
-           <CardExplorer />
-           </b-col> -->
     </div>
   </div>
 </template>
@@ -19,7 +26,6 @@ import CardEditor from "@/components/CardEditor.vue";
 import CardCreator from "@/components/CardCreator.vue";
 import CardUploader from "@/components/CardUploader.vue";
 import CardExplorer from "@/components/CardExplorer.vue";
-import DeckExplorer from "@/components/DeckExplorer.vue";
 import CardViewer from "@/components/CardViewer.vue";
 import LoginMessage from "@/components/LoginMessage.vue";
 axios.defaults.baseURL = "/mikarezoo-flashcards";
@@ -31,14 +37,13 @@ import { mapGetters } from "vuex";
     CardViewer,
     CardUploader,
     CardExplorer,
-    DeckExplorer,
     CardCreator,
     LoginMessage,
   },
   computed: mapGetters(["getLoggedIn", "getUser"]),
 
 })
-export default class Explore extends Vue {
+export default class Manage extends Vue {
   getLoggedIn!: boolean;
   getUser!: any;
 }

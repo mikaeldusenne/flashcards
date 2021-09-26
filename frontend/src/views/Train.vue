@@ -9,20 +9,20 @@
         <div class="col-xl-6 col-lg-8 col-sm-12 col-xs-12">
           <div class="card">
             <div class="card-body" style="margin-top: 0.5rem">
-              <div class="row mb-2 list-item-form">
-                <label for="lang-match-search" class="col-sm-3 col-form-label"
-                >User</label
-                     >
-                <div class="col-sm-9">
-                  <b-form-select
-                    id="lang-match-search"
-                    v-model="user"
-                    :options="['Mikaël', 'آرزو']"
-                    @change="getCards"
-                    class="form-control form-control"
-                  />
-                </div>
-              </div>
+              <!-- <div class="row mb-2 list-item-form">
+                   <label for="lang-match-search" class="col-sm-3 col-form-label"
+                   >User</label
+                   >
+                   <div class="col-sm-9">
+                   <b-form-select
+                   id="lang-match-search"
+                   v-model="user"
+                   :options="['Mikaël', 'آرزو']"
+                   @change="getCards"
+                   class="form-control form-control"
+                   />
+                   </div>
+                   </div> -->
 
               <div class="row mb-3 list-item-form">
                 <label for="lang-match-search" class="col-sm-3 col-form-label"
@@ -52,16 +52,18 @@
                 </div>
               </div>
               <div
+                class="row"
                 style="
                        display: flex;
                        justify-content: end;
                        margin: 0 0.5rem;
-                       margin-top: 0.5rem;
+                       margin-top: 1rem;
                        "
               >
+                <div style="display: flex; align-items: center; margin: 0 1rem;"><em>{{ cards.length }} cards.</em></div>
                 <button
                   @click="startTrain"
-                  class="btn btn-outline-secondary"
+                  class="btn btn-primary"
                   type="button"
                 >
                   Start
@@ -70,7 +72,6 @@
             </div>
           </div>
           <div class="row" style="margin-bottom: 1rem">
-            <em>{{ cards.length }} cards.</em>
           </div>
         </div>
       </b-row>

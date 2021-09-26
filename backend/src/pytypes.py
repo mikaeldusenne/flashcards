@@ -232,15 +232,20 @@ class Card(V):
     decks: List[str] = attr.ib(default=attr.Factory(list))
     created: datetime = attr.ib(default=datetime.fromtimestamp(0))
     modified: datetime = attr.ib(default=datetime.fromtimestamp(0))
+    creator: str = attr.ib(default=None)
+    importance: float = attr.ib(default=0)
+    difficulty: float = attr.ib(default=0)
 
 
 @attr.s(auto_attribs=True)
 class Deck(V):
     title: str
-    created: datetime = attr.ib(default=datetime.fromtimestamp(0))
-    modified: datetime = attr.ib(default=datetime.fromtimestamp(0))
     id: str = attr.ib(default=None)
     cards: List[str] = attr.ib(default=attr.Factory(list))
+    created: datetime = attr.ib(default=datetime.fromtimestamp(0))
+    modified: datetime = attr.ib(default=datetime.fromtimestamp(0))
+    creator: str = attr.ib(default=None)
+    pictureUtl: str = attr.ib(default=None)
 
 
 

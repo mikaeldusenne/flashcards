@@ -87,7 +87,7 @@ import CardEditor from "@/components/CardEditor.vue";
   mixins: [MathMixin],
 })
 export default class CardCreator extends Mixins(MathMixin) {
-  newCard: Card = { id: "", langs: [], decks: [] };
+  newCard: Card = { id: "", langs: [], decks: [], difficulty: 2.5, importance: 2.5, created: new Date(), modified: new Date(), creator: "" };
 
   decks: any[] = [];
   newDeck: any = { title: "" };
