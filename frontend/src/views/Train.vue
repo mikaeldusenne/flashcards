@@ -353,9 +353,10 @@ export default class Train extends Mixins(MathMixin) {
 
   mounted() {
     if(this.$route.query.deck){
-      this.deck=this.$route.query.deck;
+      const deck: string = (this.$route.query.deck as string);
+      this.deck=deck;
     }
-    
+        
     this.getCards();
     axios
     .get("/api/langs")
