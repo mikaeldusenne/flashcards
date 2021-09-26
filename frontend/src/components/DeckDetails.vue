@@ -1,22 +1,30 @@
 <template>
   <b-container>
-    <b-row class="alert alert-info" style="justify-content: center;">
-      <h2 style="margin: 1rem 0; text-align: center;">{{deck.title}}</h2>
+    <b-row class="alert alert-info bg-green text-light" style="justify-content: center;">
+      <h4 style="margin: 1rem 0; text-align: center;"><strong>{{deck.title}}</strong></h4>
     </b-row>
     <b-row style="justify-content: center; margin: 2rem 0;">
       <b-card style="width: 100%;">
         <b-card-title>
           <strong>My statistics on this Deck</strong>
         </b-card-title>
-        <b-card-body>
+        <b-card-body style="padding-bottom: 0;">
           <LoginMessage>
-            coming soon
+            <div>
+              <div>
+                coming soon
+              </div>
+              <div style="margin: 1rem 0;">
+                <router-link class="router-link-decorated" :to="{path: '/train', query: { deck: deck._id }}">Practice ></router-link>
+              </div>
+            </div>
           </LoginMessage>
         </b-card-body>
       </b-card>
     </b-row>
     <b-row
       style="display: flex; justify-content: center; margin-bottom: 0; position: sticky; top: 0;"
+      v-show="total_cards > perPage"
     >
       <b-pagination
         class="pagination"

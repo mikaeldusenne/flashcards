@@ -1,12 +1,7 @@
 <template>
   <div class="container-fluid">
-    <div class="row justify-content-md-center" style="margin: 1rem">
-      <b-col sm="12" md="10" lg="10" xl="8">
-        <DeckExplorer />
-      </b-col>
-      <!-- <b-col sm="12" md="10" lg="10" xl="8">
-           <CardExplorer />
-           </b-col> -->
+    <div class="row" style="margin: 1rem; display: flex; justify-content: center;">
+      <DeckExplorer />
     </div>
   </div>
 </template>

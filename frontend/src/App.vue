@@ -91,7 +91,41 @@ export default class App extends Vue {
   color: #2c3e50;
 }
 
-#content a.router-link-exact-active {
-  color: #42b983;
+/* #content a.router-link-exact-active {
+   color: #42b983;
+   }
+ */
+
+.bg-green{
+  background-color: hsl(167,100%,21%) !important;
 }
+
+.border-green{
+  border-color: hsl(167,100%,21%) !important;
+}
+
+.pagination {
+  margin-bottom: 0 !important;
+}
+
+.pagination .page-link {
+  color: #111 !important;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #ccc !important;
+  border-color: #ccc !important;
+  box-shadow: none !important;
+}
+
+.pagination .page-item .page-link {
+  background-color: #fff !important;
+  border-color: #fff !important;
+  box-shadow: none !important;
+}
+
+.router-link-decorated{
+  text-decoration: underline;
+}
+
 </style>

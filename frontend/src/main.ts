@@ -45,6 +45,11 @@ import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 import "vue-toastification/dist/index.css";
 
+import Verte from 'verte';
+import 'verte/dist/verte.css';
+// register component globally
+Vue.component('verte', Verte);
+
 Vue.use(Toast, {});
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons)

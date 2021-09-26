@@ -32,8 +32,7 @@
       style="display: flex; justify-content: center; margin-bottom: 0; "
     >
       <b-pagination
-        
-        class="pagination"
+        class="pagination pagination-sm"
         v-model="currentPage"
         style="margin-bottom: 0;"
         :total-rows="total_cards"
@@ -119,4 +118,6 @@ export default class DeckExplorer extends Mixins(MathMixin) {
 }
 </script>
 
-<style scoped></style>
+<style>
+
+</style>
